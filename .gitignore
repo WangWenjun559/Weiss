@@ -5,3 +5,6 @@
 scrapers/imdb/null
 scrapers/imdb/*.txt
 scrapers/imdb/*.json
+
+#python
+*/**/*.pyc
