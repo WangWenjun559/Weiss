@@ -6,7 +6,7 @@ import helpers
 
 
 historyfile = 'crawled.txt'    ## file that stores the movie id crawled
-release_date = '2015-01-01,2016-01-01'  ## the release date range to crawl
+release_date = '2015-01-01,2015-01-01'  ## the release date range to crawl
 reviewfile = 'reviews.json'
 source = 'imdb'
 
@@ -16,19 +16,20 @@ def getToCrawl():
         lines = [line.rstrip('\n') for line in f]
     crawled = Set(lines)
 
-    toCrawlDicts = helpers.get_movie_id(release_date)
-    res = filter(lambda x : x not in crawled, toCrawlList)
+    toCrawlList = helpers.get_movie_id(release_date)
+    toCrawl = filter(lambda x : x not in crawled, toCrawlList)
 
     with open(historyfile, 'a') as f:
-        for s in res:
+        for s in toCrawl:
             f.write(s + '\n')
 
-    return res[:10]
+    return toCrawl
 
 
 def getReviews():
     toCrawl = getToCrawl()
-    data = map(helper.get_movie_reviews, toCrawl)
+    print "About to get Reviews", len(toCrawl), 'IDs in total'
+    data = map(helpers.get_movie_reviews, toCrawl)
     data = filter(lambda x : x != [], data)
     with open(reviewfile, 'w') as f:
         json.dump(data, f)
@@ -36,4 +37,3 @@ def getReviews():
 
 if __name__ == "__main__":
     getReviews()
-
