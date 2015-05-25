@@ -41,3 +41,21 @@ def get_movie_reviews(ID):
     numPages = (numRvws-1) / 10 + 1   ## each page has at most 10 reviews  - 1 # -1 needed, since 0-indexed
     listOfListOfRvws = map(lambda i: _getReview(ID, 10*i), xrange(numPages))
     return [rvw for listOfRvws in listOfListOfRvws for rvw in listOfRvws]
+
+def get_movie_infos(ID):
+    '''
+    eid, source, name, tid, description, url
+    '''
+    print "getting movie info of", movieId
+    data = ia.get_movie(ID)
+    res = {}
+    res['eid'] = ID
+    res['source'] = source
+    res['name'] = data['title']
+    res['tid'] = 0
+    res['description'] = data.summary()
+    res['url'] = ia.urls['movie_main'] % ID
+    return res
+
+
+
