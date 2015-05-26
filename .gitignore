@@ -1,2 +1,4 @@
 # Ignore files
 *.ini
+*.pyc
+*.csv
