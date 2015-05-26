@@ -1,4 +1,12 @@
 # Ignore files
 *.ini
-*.pyc
 *.csv
+
+#imdb test files 
+scrapers/imdb/null
+scrapers/imdb/*.txt
+scrapers/imdb/*.json
+
+#python (we should ignore all .pyc files)
+*.pyc
+
