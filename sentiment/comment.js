@@ -37,12 +37,13 @@ fs.readFile(fileName,'utf8',function(err, data){
 			var body = comment['body']
 			/* Get sentiment score */
 			var score = sentiment(body)
+			comment['sentiment'] = score['score']
+
 			var text = JSON.stringify(comment)
-			/* Info write to final json file */
-			text = text.replace('}',',')
-			text += '"sentiment":' + '"' + score['score'] + '"}'
+			//console.log(text)  // for debugging
 			fs.appendFile(processed,text,'utf8')
 		}
+		//console.log('----------') // for debugging
 		fs.appendFile(processed,']','utf8')
 	}
 	fs.appendFile(processed,']','utf8')
