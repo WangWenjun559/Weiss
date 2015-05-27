@@ -19,7 +19,7 @@ def get_movie_id(release_date):
 
 
 def _addMetaData(entry, movieId):
-    entry['eid'] = movieId
+    entry['id'] = movieId
     entry['source'] = source
     return entry
 
@@ -52,15 +52,15 @@ def get_review_amount(ID):
 
 def get_movie_infos(ID):
     '''
-    eid, source, name, tid, description, url
+    id, source, name, tid, description, url
     '''
     print "getting movie info of", ID
     data = ia.get_movie(ID)
     res = {}
-    res['eid'] = ID
+    res['id'] = ID
     res['source'] = source
     res['name'] = data['title']
-    res['tid'] = 0
+    res['tid'] = 0  # imdb has type id 0
     res['description'] = data.summary()
     res['url'] = ia.urls['movie_main'] % ID
     return res
