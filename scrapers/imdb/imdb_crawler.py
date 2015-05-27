@@ -1,17 +1,21 @@
 import sys
-sys.path.insert(1, "/usr/local/lib/python2.7/site-packages")
 from sets import Set
 import json
 import helpers
+from datetime import date
+from dateutil.rrule import rrule, DAILY
 
 
-historyfile = 'crawled.txt'    ## file that stores the movie id crawled
-start = '2015-01-02'
-end = '2015-01-02'
-release_date = '%s,%s' % (start, end)  ## the release date range to crawl
-cfile = 'comments_%s.json' % start
-efile = 'entities_%s.json' % start
+datadir = '/home/mingf/data/'
 source = 'imdb'
+homedir = '/home/mingf/Weiss/'
+module = 'scrapers/'
+historyfile = homedir + module + source + '/crawled.txt'    ## file that stores the movie id crawled
+start = date(2015, 5, 11)
+end = date(2016, 1, 1)
+release_date = ''
+cfile = ''
+efile = ''
 
 
 def getToCrawl():
@@ -47,4 +51,10 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    for dt in rrule(DAILY, dtstart = start, until = end):
+        thisdate = dt.strftime('%Y-%m-%d')
+        release_date = '%s,%s' % (thisdate, thisdate)  ## the release date range to crawl
+        cfile = '%s%s_comments_%s.json' % (datadir, source, thisdate)
+        efile = '%s%s_entities_%s.json' % (datadir, source, thisdate)
+        print "About to crawl", thisdate
+        run()

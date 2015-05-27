@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import re
 import urllib
+import datetime
 
 from imdb import imdbURL_base
 from imdb.Person import Person
@@ -1503,7 +1504,7 @@ class DOMHTMLUserReviewParser(DOMParserBase):
                     'title': x.get('title').strip(),
                     'body': (x.get('body') or u'').strip(),
                     'author': (x.get('author') or u'').strip(),
-                    'time': (x.get('date2') or x.get('date1') or u'').strip(),
+                    'time': _parse_date((x.get('date2') or x.get('date1') or u'').strip()),
                     'rating': (_parse_rating(x.get('rating')) or u'').strip()
                 })),
         Extractor(label='amount',
@@ -1523,6 +1524,12 @@ class DOMHTMLUserReviewParser(DOMParserBase):
         (re.compile('(<hr/>)', re.I), r'</div>\1'),
         (re.compile('<p></p>', re.I), r'')
         ]
+
+def _parse_date(s):
+    if (s == ''):
+        return s
+    return datetime.datetime.strptime('6 January 2015', '%d %B %Y').strftime("%Y-%m-%d")
+
 
 def _parse_reviews_amount(s):
     idx = s.find(" reviews")
