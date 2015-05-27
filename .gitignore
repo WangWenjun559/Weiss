@@ -10,3 +10,6 @@ scrapers/imdb/*.json
 #python (we should ignore all .pyc files)
 *.pyc
 
+#misc
+.DS_Store
+
