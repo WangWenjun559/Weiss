@@ -60,7 +60,7 @@ def get_movie_infos(ID):
     res['id'] = ID
     res['source'] = source
     res['name'] = data['title']
-    res['tid'] = 0  # imdb has type id 0
+    res['tid'] = 3  # imdb has type id 3
     res['description'] = data.summary()
     res['url'] = ia.urls['movie_main'] % ID
     return res
