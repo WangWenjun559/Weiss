@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 import re
 import urllib2
 import csv
+import json
+import datetime
 
 main_page = 'http://www.urbanspoon.com'
 
@@ -36,15 +38,22 @@ for i in range(numPages):
             else:
                 placeList.append(main_page + href['href'])
 
-## Lists to hold comment data
-date = []
-author = []
-entityID = []
-entity = []
-commentID = []
+## Comment Fields
 comment = []
+rating = []
+author = []
 commentTitle = []
-sentiment = []
+source = "urbanspoon"
+commentID = []
+date = []
+
+## Entity Fields
+description = []
+url = []
+entityID = []
+tid = 2
+entity = []
+
 
 ## Iterate over each restaurant's URL in placeList (list of URLs) and collect reviews from each one
 for place in placeList:
@@ -54,6 +63,21 @@ for place in placeList:
     restaurantURL = urllib2.urlopen(place)
     soup2 = BeautifulSoup(restaurantURL)
         
+    ## Grab food types served
+    descText = ""
+    foodTypes = soup2.findAll('meta',{'property':'urbanspoon:cuisine'})
+    numTypes = len(foodTypes)
+    counter = 1
+
+    for food in foodTypes:
+        foodType = food['content']
+        descText += foodType
+
+        if counter < numTypes:
+            descText += ", "
+
+        counter += 1
+
     reviews = soup2.findAll('li','comment review')
 
     for review in reviews:
@@ -82,17 +106,61 @@ for place in placeList:
         commentID.append(reviewID_val)
         comment.append(review_val)
         commentTitle.append(reviewTitle_val)
-        sentiment.append(None)
+        rating.append(-1)
+        url.append(place)
+        description.append(descText)
 
 
-with open('reviews.csv','wb') as csvfile:
-    csvwriter = csv.writer(csvfile, delimiter='\t')
 
-    ## Write header
-    csvwriter.writerow(['Date','Author','entityID','Entity Name','ReviewID','Review Title','Review','Sentiment'])
+# with open('reviews.csv','wb') as csvfile:
+#     csvwriter = csv.writer(csvfile, delimiter='\t')
 
-    for i in range(len(date)):
-        csvwriter.writerow([date[i],author[i],entityID[i],entity[i],commentID[i],comment[i],commentTitle[i],sentiment[i]])
+#     ## Write header
+#     csvwriter.writerow(['Date','Author','entityID','Entity Name','ReviewID','Review Title','Review','rating'])
 
+#     for i in range(len(date)):
+#         csvwriter.writerow([date[i],author[i],entityID[i],entity[i],commentID[i],comment[i],commentTitle[i],rating[i]])
+
+## Create json
+commentJSON = []
+commentByEntity = []
+entityJSON = []
+
+## Format comments
+for i in range(len(date)):
+    commentDict = {"body":comment[i],"rating":rating[i], \
+        "author":author[i],"title":commentTitle[i], \
+        "source":source,"id":entityID[i],"time":date[i]}
+    commentByEntity.append(commentDict)
+
+    if i+2 < len(entityID):
+        if (entityID[i] != entityID[i+1]):
+            commentJSON.append(commentByEntity)
+            commentByEntity = []
+
+## Format entities
+uniqueEntities = set(entityID)
+for nameID in uniqueEntities:
+    index = entityID.index(nameID)
+    entityDict = {"description":description[index],"url":url[index], \
+        "id":nameID,"tid":2,"name":entity[index]}
+    entityJSON.append(entityDict)
+
+## Write the two jsons
+today = datetime.datetime.now()
+year = today.year
+month = today.month
+day = today.day
+
+## Create date stamp string
+dateStamp = str(year) + "-" + str(month) + "-" + str(day)
+
+## write comments json
+with open('urbanspoon-comments-' + dateStamp + '.json','w') as output1:
+    json.dump(commentJSON, output1)
+
+## Write entity json
+with open('urbanspoon-entities-' + dateStamp + '.json','w') as output1:
+    json.dump(entityJSON, output1)
 
 
