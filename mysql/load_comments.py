@@ -28,7 +28,6 @@ import json
 import argparse
 
 datadir = '/home/mingf/data/'
-source = 'imdb'
 homedir = '/home/mingf/Weiss/'
 module = 'mysql/'
 release_date = ''
@@ -80,11 +79,11 @@ def _arg_parser():
     start = datetime.strptime(results.start, '%Y-%m-%d').date()
     end = datetime.strptime(results.end, '%Y-%m-%d').date()
 
-    return (user, passwd, start, end, dbname)
+    return (user, passwd, start, end, dbname, source)
 
 
 if __name__ == '__main__':
-    user, passwd, start, end, dbname = _arg_parser()
+    user, passwd, start, end, dbname, source = _arg_parser()
 
     dbh = mdb.connect(host="localhost",
                    user=user,
