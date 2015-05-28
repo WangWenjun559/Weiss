@@ -156,11 +156,11 @@ day = today.day
 dateStamp = str(year) + "-" + str(month) + "-" + str(day)
 
 ## write comments json
-with open('urbanspoon-comments-' + dateStamp + '.json','w') as output1:
+with open('urbanspoon_comments_' + dateStamp + '.json','w') as output1:
     json.dump(commentJSON, output1)
 
 ## Write entity json
-with open('urbanspoon-entities-' + dateStamp + '.json','w') as output1:
+with open('urbanspoon_entities_' + dateStamp + '.json','w') as output1:
     json.dump(entityJSON, output1)
 
 
