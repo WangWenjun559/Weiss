@@ -31,12 +31,9 @@ datadir = '/home/mingf/data/'
 source = 'imdb'
 homedir = '/home/mingf/Weiss/'
 module = 'mysql/'
-start = date(2015, 1, 1)
-end = date(2016, 1, 1)
 release_date = ''
 cfile = ''
 efile = ''
-dbname = ''
 
 dbh = None
 c = None
@@ -78,14 +75,15 @@ def _arg_parser():
     user = results.user
     passwd = results.passwd
     source = results.source
+    dbname = results.dbname
     start = datetime.strptime(results.start, '%Y-%m-%d').date()
     end = datetime.strptime(results.end, '%Y-%m-%d').date()
 
-    return
+    return (user, passwd, start, end, dbname)
 
 
 if __name__ == '__main__':
-    _arg_parser()
+    user, passwd, start, end, dbname = _arg_parser()
 
     dbh = mdb.connect(host="localhost",
                    user=user,
