@@ -2,7 +2,21 @@
 A scrpit to load entity into Database
 Author: Ming
 Usage:
-python load_entities.py -source source -from 2015-01-01 -to 2016-01-01 -user username -pass password
+usage: load_entities.py [-h] [--source SOURCE] [--start START] [--end END]
+                        [--user USER] [--passwd PASSWD] [--db DBNAME]
+
+optional arguments:
+-h, --help       show this help message and exit
+--source SOURCE  The source info, which would be used when openning
+cooresponding json file
+--start START    The start date, in form of YYYY-MM-DD
+--end END        The end date, in form of YYYY-MM-DD, The range is inclusive
+--user USER      The user name of database
+--passwd PASSWD  The password of database
+--db DBNAME      The name of database
+
+Example:
+python load_entities.py --source=imdb --start=2015-01-01 --end=2015-01-01 --user=ming --passwd=fang --db=test')
 """
 
 import MySQLdb as mdb
@@ -51,20 +65,22 @@ def run():
 
 def _arg_parser():
     parser = argparse.ArgumentParser(description='A script to load entity info into database.\nEx: python load_entities.py --source=imdb --start=2015-01-01 --end=2015-01-01 --user=ming --passwd=fang --db=test')
-    parser.add_argument('--source', dest='source', action='store', help='The source info, which would be used when openning cooresponding json file')
-    parser.add_argument('--start', dest='start', action='store', help='The start date, in form of YYYY-MM-DD')
-    parser.add_argument('--end', dest='end', action='store', help='The end date, in form of YYYY-MM-DD, The range is inclusive')
-    parser.add_argument('--user', dest='user', action='store', help='The user name of database')
-    parser.add_argument('--passwd', dest='passwd', action='store', help='The password of database')
-    parser.add_argument('--db', dest='dbname', action='store', help='The name of database')
+    parser.add_argument('--source', dest='source', action='store', help='The source info, which would be used when openning cooresponding json file', required=True)
+    parser.add_argument('--start', dest='start', action='store', help='The start date, in form of YYYY-MM-DD', required=True)
+    parser.add_argument('--end', dest='end', action='store', help='The end date, in form of YYYY-MM-DD, The range is inclusive', required=True)
+    parser.add_argument('--user', dest='user', action='store', help='The user name of database', required=True)
+    parser.add_argument('--passwd', dest='passwd', action='store', help='The password of database', required=True)
+    parser.add_argument('--db', dest='dbname', action='store', help='The name of database', required=True)
 
     results = parser.parse_args()
+
 
     user = results.user
     passwd = results.passwd
     source = results.source
     start = datetime.strptime(results.start, '%Y-%m-%d').date()
     end = datetime.strptime(results.end, '%Y-%m-%d').date()
+
     return
 
 
