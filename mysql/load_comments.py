@@ -27,7 +27,7 @@ import sys
 import json
 import argparse
 
-datadir = '/home/mingf/data/'
+datadir = '/home/mingf/comment_full/'
 homedir = '/home/mingf/Weiss/'
 module = 'mysql/'
 release_date = ''
@@ -35,14 +35,14 @@ cfile = ''
 efile = ''
 
 dbh = None
-c = None
+dbc = None
 def _dict2tuple(entry):
     return (entry['eid'],
             entry['body'],
-            entry['rating'],
+            entry['rating'] or '-1',
             entry['author'],
             entry['title'],
-            entry['name'],
+            entry['time'],
             entry['sentiment']
             )
 
@@ -53,8 +53,8 @@ def run():
     print "About to load", thisdate, "with", len(data), "comment groups"
     if (len(data) == 0):
         return
-    c.executemany(
-        """INSERT INTO entity (eid, body, rating, author, title, name, sentiment)
+    dbc.executemany(
+        """INSERT INTO comment (eid, body, rating, author, title, time, sentiment)
         VALUES (%s, %s, %s, %s, %s, %s, %s)""",
         [_dict2tuple(comment) for comments in data for comment in comments]
     )
@@ -89,11 +89,15 @@ if __name__ == '__main__':
                    user=user,
                    passwd=passwd,
                    db=dbname)
-    c = dbh.cursor()
+    dbc = dbh.cursor()
+
+    dbh.set_character_set('utf8')
+    dbc.execute('SET NAMES utf8;')
+    dbc.execute('SET CHARACTER SET utf8;')
+    dbc.execute('SET character_set_connection=utf8;')
 
     for dt in rrule(DAILY, dtstart = start, until = end):
         thisdate = dt.strftime('%Y-%m-%d')
-        release_date = '%s,%s' % (thisdate, thisdate)  ## the release date range to crawl
         cfile = '%s%s_comments_%s.json' % (datadir, source, thisdate)
         run()
 
