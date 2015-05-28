@@ -26,6 +26,7 @@ from dateutil.rrule import rrule, DAILY
 import sys
 import json
 import argparse
+import os.path
 
 datadir = '/home/mingf/data/'
 homedir = '/home/mingf/Weiss/'
@@ -47,6 +48,9 @@ def _dict2tuple(entry):
 
 
 def run():
+    if (not os.path.exists(efile)):
+        print "No such file", efile
+        return
     with open(efile, 'r') as f:
         data = json.load(f)
     print "About to load", efile, "with", len(data), "entities"

@@ -26,6 +26,7 @@ from dateutil.rrule import rrule, DAILY
 import sys
 import json
 import argparse
+import os.path
 
 datadir = '/home/mingf/comment_full/'
 homedir = '/home/mingf/Weiss/'
@@ -48,6 +49,9 @@ def _dict2tuple(entry):
 
 
 def run():
+    if (not os.path.exists(cfile)):
+        print "No such file", cfile
+        return
     with open(cfile, 'r') as f:
         data = json.load(f)
     print "About to load", thisdate, "with", len(data), "comment groups"
