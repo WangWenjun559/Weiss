@@ -9,42 +9,45 @@
  *       Check this website for more info
  *
  * Author: Wenjun Wang
- * Date: 2015-05-26
+ * Date: 2015-05-28
  */
-
-/* Import Packages */
 var fs = require('fs')
 var sentiment = require('sentiment');
 
 var fileName = process.argv[2]
 /* Final json file */
-var processed = fileName.replace('.json','_processed.json')
+
+var processed = fileName.replace('data','commentfull')
 
 fs.writeFile(processed,'[','utf8')
 
 fs.readFile(fileName,'utf8',function(err, data){
-	if (err) {
-		return console.log('Read Error: ' + err)
-	}
+        if (err)
+                return console.log('Read Error: ' + err)
 
-	data = JSON.parse(data)
+        data = JSON.parse(data)
 
-	for (var i = 0; i < data.length; i++){
-		fs.appendFile(processed,'[','utf8')
-		var entity = data[i]
-		for (var j = 0; j < entity.length; j++){
-			var comment = entity[j]
-			var body = comment['body']
-			/* Get sentiment score */
-			var score = sentiment(body)
-			comment['sentiment'] = score['score']
+        for (var i = 0; i < data.length; i++){
+                fs.appendFile(processed,'[','utf8')
+                var entity = data[i]
+                for (var j = 0; j < entity.length; j++){
+                        var comment = entity[j]
+                        var body = comment['body']
+                        /* Get sentiment score */
+                        var score = sentiment(body)
+                        comment['sentiment'] = score['score']
 
-			var text = JSON.stringify(comment)
-			//console.log(text)  // for debugging
-			fs.appendFile(processed,text,'utf8')
-		}
-		//console.log('----------') // for debugging
-		fs.appendFile(processed,']','utf8')
-	}
-	fs.appendFile(processed,']','utf8')
-});
+                        var text = JSON.stringify(comment)
+                        if (j != entity.length-1)
+                                text += ','
+                        //console.log(text)  // for debugging
+                        fs.appendFile(processed,text,'utf8')
+                }
+                //console.log('----------') // for debugging
+                if (i != data.length-1)
+                        fs.appendFile(processed,'],','utf8')
+                else
+                        fs.appendFile(processed,']','utf8')
+        }
+        fs.appendFile(processed,']','utf8')
+})
