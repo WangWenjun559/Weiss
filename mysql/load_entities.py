@@ -28,7 +28,6 @@ import json
 import argparse
 
 datadir = '/home/mingf/data/'
-source = 'imdb'
 homedir = '/home/mingf/Weiss/'
 module = 'mysql/'
 release_date = ''
@@ -50,7 +49,7 @@ def _dict2tuple(entry):
 def run():
     with open(efile, 'r') as f:
         data = json.load(f)
-    print "About to load", thisdate, "with", len(data), "entities"
+    print "About to load", efile, "with", len(data), "entities"
     if (len(data) == 0):
         return
     c.executemany(
@@ -79,11 +78,11 @@ def _arg_parser():
     start = datetime.strptime(results.start, '%Y-%m-%d').date()
     end = datetime.strptime(results.end, '%Y-%m-%d').date()
 
-    return (user, passwd, start, end, dbname)
+    return (user, passwd, start, end, dbname, source)
 
 
 if __name__ == '__main__':
-    user, passwd, start, end, dbname = _arg_parser()
+    user, passwd, start, end, dbname, source = _arg_parser()
 
     dbh = mdb.connect(host="localhost",
                    user=user,
@@ -94,7 +93,6 @@ if __name__ == '__main__':
     for dt in rrule(DAILY, dtstart = start, until = end):
         thisdate = dt.strftime('%Y-%m-%d')
         release_date = '%s,%s' % (thisdate, thisdate)  ## the release date range to crawl
-        cfile = '%s%s_comments_%s.json' % (datadir, source, thisdate)
         efile = '%s%s_entities_%s.json' % (datadir, source, thisdate)
         run()
 
