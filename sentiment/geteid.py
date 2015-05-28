@@ -41,7 +41,9 @@ def main():
 	database = sys.argv[1]
 	usr = sys.argv[2]
 	pwd = sys.argv[3]
-	directory = sys.argv[4] + ".json"
+	source = sys.argv[4]
+	directory = "/home/mingf/comment_full/" + source + "_comments_*.json"
+	print directory
 
 	db = mdb.connect(host="localhost",user=usr,passwd=pwd,db=database)
 	cur = db.cursor()
