@@ -21,7 +21,7 @@ public class Comment {
 	
 	public JSONObject convert2Json() throws JSONException {
 		JSONObject o = new JSONObject();
-		o.put("eid", this.entityID);
+		o.put("id", this.entityID);
 		o.put("source", this.source);
 		o.put("time", this.timestamp);
 		o.put("author", this.commentAuthor);

@@ -52,13 +52,13 @@ public class Crawler {
 			processLink();
 			/** Write All Stuff into file */
 			FileWriter fstreamComment = new FileWriter(new File(".").getAbsolutePath() 
-					+"./data/comments_"+ timeString,true); 
+					+"./data/MF_comments_"+ timeString + ".json",true); 
 			commentEntityArray.write(fstreamComment);
 			fstreamComment.close();
 			
 			/** Create Entities File */
 			FileWriter fstreamEntity = new FileWriter(new File(".").getAbsolutePath() 
-					+"./data/entities_"+ timeString, true);
+					+"./data/MF_entities_"+ timeString + ".json", true);
 			entities.write(fstreamEntity);
 			fstreamEntity.close();
 		}
