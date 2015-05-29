@@ -35,7 +35,8 @@ def walk_through(fpath,cur):
 
 def main():
 	if len(sys.argv) < 4:
-		print "Usage: python geteid.py db usr pwd directory"
+		print "Usage: python geteid.py db usr pwd source"
+		print "source may be: imdb, MF"
 		sys.exit(1)
 
 	database = sys.argv[1]
