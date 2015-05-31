@@ -19,3 +19,5 @@ scrapers/urbanspoon/*.csv
 #java
 *.class
 
+# Ignore Weiss (webapp directory)
+weiss/*
