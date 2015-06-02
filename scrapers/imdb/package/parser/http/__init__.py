@@ -630,6 +630,11 @@ class IMDbHTTPAccessSystem(IMDbBase):
         cont = self._retrieve("http://www.imdb.com/search/title?release_date=" + str(release_date) + "&start=" + str(start) + "&title_type=feature")
         return self.mProxy.id_parser.parse(cont)
 
+    def get_movie_id_adv(self, query, start):
+        #query = '&'.join(map(lambda k, v: "%s=%s" % (k, v), params))
+        cont = self._retrieve("http://www.imdb.com/search/title?%s&start=%s" % (query, str(start)))
+        return self.mProxy.id_parser.parse(cont)
+
 
     ################################
 

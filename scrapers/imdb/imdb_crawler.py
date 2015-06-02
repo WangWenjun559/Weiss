@@ -1,8 +1,10 @@
+#!/usr/bin/env python
 import sys
 from sets import Set
 import json
 import helpers
 from datetime import date
+from datetime import datetime
 from dateutil.rrule import rrule, DAILY
 
 
@@ -23,12 +25,12 @@ def getToCrawl():
         #lines = [line.rstrip('\n') for line in f]
         crawled = json.load(f)
     crawledIDs = Set(crawled.keys())
-    IDs = helpers.get_movie_id(release_date)
+    IDs = crawledIDs.union(helpers.get_movie_id(release_date))
     IDwithNum = {ID: helpers.get_review_amount(ID) for ID in IDs}
     updates = {ID: num for ID, num in IDwithNum.iteritems() if num != 0 and ID in crawledIDs and num > crawled[ID]}
     news = {ID: num for ID, num in IDwithNum.iteritems() if num != 0 and ID not in crawledIDs}
 
-    toCrawl = {ID: num - crawled[ID] for ID, num in updates}
+    toCrawl = {ID: num - crawled[ID] for ID, num in updates.iteritems()}
     toCrawl.update(news)
 
     crawled.update(IDwithNum)
