@@ -9,7 +9,7 @@ main_page = 'http://www.urbanspoon.com'
 
 restaurants = '/lb/23/best-restaurants-Pittsburgh'
 
-numPages = 50
+numPages = 2
 
 ## List that contains urls to each restaurant
 placeList = []
@@ -156,7 +156,7 @@ uniqueEntities = set(entityID)
 for nameID in uniqueEntities:
     index = entityID.index(nameID)
     entityDict = {"description":description[index],"url":url[index], \
-        "id":nameID,"tid":2,"name":entity[index]}
+        "id":nameID,"tid":2,"name":entity[index],"source":source}
     entityJSON.append(entityDict)
 
 ## Write the two jsons
@@ -166,7 +166,7 @@ month = today.month
 day = today.day
 
 ## Create date stamp string
-dateStamp = str(year) + "-" + str(month) + "-" + str(day)
+dateStamp = str(year) + "-" + str("%02d" % (month)) + "-" + str("%02d" % (day))
 
 ## write comments json
 with open('urbanspoon_comments_' + dateStamp + '.json','w') as output1:
