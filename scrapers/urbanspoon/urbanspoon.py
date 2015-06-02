@@ -9,7 +9,7 @@ main_page = 'http://www.urbanspoon.com'
 
 restaurants = '/lb/23/best-restaurants-Pittsburgh'
 
-numPages = 1
+numPages = 50
 
 ## List that contains urls to each restaurant
 placeList = []
@@ -53,12 +53,14 @@ url = []
 entityID = []
 tid = 2
 entity = []
-
+placeCount = 1
+totalPlaces = len(placeList)
 
 ## Iterate over each restaurant's URL in placeList (list of URLs) and collect reviews from each one
 for place in placeList:
 
-    print "Collecting Reviews from: " + place
+    print str(placeCount) + "/" + str(totalPlaces) + " Collecting Reviews from: " + place
+    placeCount += 1
 
     restaurantURL = urllib2.urlopen(place)
     soup2 = BeautifulSoup(restaurantURL)
@@ -95,7 +97,13 @@ for place in placeList:
 
         ## Get Review information
         reviewID_val = review['data-comment'].strip()
-        reviewTitle_val = review.find('div','title',text=True).getText().encode('utf-8')
+
+        ## Sets title to No Title if none is present
+        try:
+            reviewTitle_val = review.find('div','title',text=True).getText().encode('utf-8')
+        except AttributeError:
+            reviewTitle_val = "No Title"
+
         review_val = review.find('div','body').getText().encode('utf-8')
 
         ## Append data to lists
@@ -120,6 +128,11 @@ for place in placeList:
 
 #     for i in range(len(date)):
 #         csvwriter.writerow([date[i],author[i],entityID[i],entity[i],commentID[i],comment[i],commentTitle[i],rating[i]])
+
+## Print out stats
+print "Places " + str(len(placeList))
+print "Reviews " + str(len(comment))
+
 
 ## Create json
 commentJSON = []

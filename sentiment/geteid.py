@@ -1,3 +1,15 @@
+'''
+This file get eid from db,
+ and add 'eid' field to each json object of each comment
+
+Usage: python geteid.py database user password source
+       source could be: imdb, MF
+
+Note: Make sure you have already get sentiment score before running this script
+
+Author: Wenjun Wang
+Date: May 29, 2015
+'''
 import MySQLdb as mdb
 import sys
 import glob
@@ -35,7 +47,8 @@ def walk_through(fpath,cur):
 
 def main():
 	if len(sys.argv) < 4:
-		print "Usage: python geteid.py db usr pwd directory"
+		print "Usage: python geteid.py db usr pwd source"
+		print "source may be: imdb, MF"
 		sys.exit(1)
 
 	database = sys.argv[1]
