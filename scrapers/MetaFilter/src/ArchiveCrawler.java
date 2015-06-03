@@ -1,11 +1,6 @@
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
@@ -24,7 +19,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.jsoup.nodes.Element;
 
-public class Crawler {
+public class ArchiveCrawler {
 	String timeString = "";
 	String time4Search = "";
 	String month = "";
@@ -37,7 +32,13 @@ public class Crawler {
 	JSONArray commentEntityArray = new JSONArray();
 	JSONArray commentArray;
 	
-	Crawler(String timeString) {
+	static final String path = "/Users/Yao/Desktop/MITS_Project/Weiss/scrapers/MetaFilter/data/";
+	
+	/**
+	 * @breif Constructor
+	 * @param timeString
+	 */
+	ArchiveCrawler(String timeString) {
 		this.timeString = timeString;
 		String[] args = timeString.split("-");
 		year = args[0];
@@ -51,14 +52,12 @@ public class Crawler {
 		if(getLinkList()) {
 			processLink();
 			/** Write All Stuff into file */
-			FileWriter fstreamComment = new FileWriter(new File(".").getAbsolutePath() 
-					+"./data/MF_comments_"+ timeString + ".json",true); 
+			FileWriter fstreamComment = new FileWriter(path + "MF_comments_"+ timeString + ".json",true); 
 			commentEntityArray.write(fstreamComment);
 			fstreamComment.close();
 			
 			/** Create Entities File */
-			FileWriter fstreamEntity = new FileWriter(new File(".").getAbsolutePath() 
-					+"./data/MF_entities_"+ timeString + ".json", true);
+			FileWriter fstreamEntity = new FileWriter(path + "MF_entities_"+ timeString + ".json", true);
 			entities.write(fstreamEntity);
 			fstreamEntity.close();
 		}
