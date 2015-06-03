@@ -62,14 +62,9 @@ def walk_through(db,cur,source):
 				num = int(math.ceil(0.1*len(sentence_list)))
 				#Random
 				randomstr = random_comment(sentence_list,num)
-				
 				insert = 'INSERT INTO summary(cid,mid,score,body) VALUES\
 				('+ str(cid) +',1,-1,"' + randomstr + '")'
-				print insert
 				cur.execute(insert)
-				'''
-				cur.commit()
-				'''
 				#LeadBased
 				leadstr = lead_comment(sentence_list,num)
 				insert = 'INSERT INTO summary(cid,mid,score,body) VALUES\
