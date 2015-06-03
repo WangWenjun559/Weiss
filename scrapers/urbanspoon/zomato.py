@@ -41,9 +41,13 @@ comment = []
 rating = []
 author = []
 commentTitle = []
-source = "urbanspoon"
+source = "zomato"
 commentID = []
 date = []
+
+## Words to ignore at beginning of review
+ignore = ['Rated','POSITIVE','NEGATIVE']
+
 
 ## Entity Fields
 description = []
@@ -53,6 +57,7 @@ tid = 2
 entity = []
 placeCount = 1
 totalPlaces = len(placeList)
+
 
 def postRequest(url,restaurant_id,limit):
     params = {'res_id':restaurant_id,'sort':'reviews-dd','limit':limit}
@@ -114,19 +119,27 @@ for place in placeList:
 
     for i in range(len(review_vals)):
         ## Comment Fields
-        comment.append(review_vals[i].getText().strip())
+        review = review_vals[i].getText().strip()
+
+        ## deal with reviews beginning with unwanted content
+        startingPhrase = -1
+        counter = 0
+        for word in ignore:
+            if review.startswith(word,0,len(word)):
+                startingPhrase = counter
+            counter += 1
+
+        if startingPhrase > -1:
+            review = re.sub(ignore[startingPhrase] + '(.+)\n', '',review).strip()
+        comment.append(review)
         rating.append(None)
         author.append(author_vals[i].getText())
         commentTitle.append(None)
         commentID.append(reviewID_vals[i]['data-review-id'])
         
         datetimeStamp = date_vals[i]['datetime'].split(' ')
-        dateStamp = datetimeStamp[0].split('-')
-        year = int(dateStamp[0])
-        month = int(dateStamp[1])
-        day = int(dateStamp[2])
-        dt = datetime.datetime(year,month,day) - datetime.datetime(1970,1,1)
-        date.append(dt.total_seconds())
+        dateStamp = datetimeStamp[0]
+        date.append(dateStamp)
 
         ## Entity Fields
         entityID.append(entityID_val)
