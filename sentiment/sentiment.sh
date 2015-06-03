@@ -24,5 +24,5 @@ for days in $(seq 0 $num);do
   day="`date -d "$date + $days days" +%Y-%m-%d`"
   f=$FILES$1_comments_$day.json
   echo $f
-  node comment.js $f
+  node /home/mingf/sentiment/comment.js $f
 done

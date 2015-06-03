@@ -5,6 +5,9 @@
 scrapers/imdb/null
 scrapers/imdb/*.txt
 scrapers/imdb/*.json
+scrapers/imdb/*.bak
+scrapers/imdb/test.*
+scrapers/imdb/dailyCrawler.sh
 
 #urbanspoon files
 scrapers/urbanspoon/*.json

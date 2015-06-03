@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 import sys
 from sets import Set
 import json
@@ -18,7 +18,9 @@ end = start
 release_date = ''
 cfile = ''
 efile = ''
-query = "groups=now-playing-us&title_type=feature"
+#query = "groups=now-playing-us&title_type=feature"
+query = "groups=now-playing-us&release_date=2015-01-01,2016-01-01&title_type=feature&user_rating=9.0,10"
+#query = "companies=fox&groups=top_250,now-playing-us&title_type=feature"
 
 
 def getToCrawl():
@@ -26,6 +28,7 @@ def getToCrawl():
         crawled = json.load(f)
     crawledIDs = Set(crawled.keys())
     IDs = helpers.get_movie_id_adv(query)
+    print "Num of ID in the query", len(IDs)
     IDwithNum = {ID: helpers.get_review_amount(ID) for ID in IDs}
     updates = {ID: num for ID, num in IDwithNum.iteritems() if num != 0 and ID in crawledIDs and num > crawled[ID]}
     news = {ID: num for ID, num in IDwithNum.iteritems() if num != 0 and ID not in crawledIDs}

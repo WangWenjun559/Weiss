@@ -1501,7 +1501,7 @@ class DOMHTMLUserReviewParser(DOMParserBase):
                     'rating': "./preceding-sibling::small[1]//text()",
                     },
                 postprocess=lambda x: {
-                    'title': x.get('title').strip(),
+                    'title':(x.get('title') or u'').strip(),
                     'body': (x.get('body') or u'').strip(),
                     'author': (x.get('author') or u'').strip(),
                     'time': _parse_date((x.get('date2') or x.get('date1') or u'').strip()),

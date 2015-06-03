@@ -32,7 +32,8 @@ def get_movie_id_adv(query):
         numMovies = int(data['amount'][0]['amount'])  # ID at IMDB is 1-indexed
         print "There are", numMovies, "IDs"
         numPages = numMovies / 50 + 1   ## each page has at most 50 IDs
-        listOfListOfIds = map(lambda i: _getId(query, 1 + 50*i), xrange(numPages))  ## +1 needed , since 1 indexed
+        listOfListOfIds = map(lambda i: _getIdAdv(query, 1 + 50*i), xrange(numPages))  ## +1 needed , since 1 indexed
+        print listOfListOfIds
         return map(lambda x: x['id'], [ID for listOfIds in listOfListOfIds for ID in listOfIds])
     else:
         return []

@@ -27,7 +27,6 @@ import sys
 import json
 import argparse
 import os.path
-import logging
 
 datadir = '/home/mingf/comment_full/'
 homedir = '/home/mingf/Weiss/'
@@ -51,11 +50,11 @@ def _dict2tuple(entry):
 
 def run():
     if (not os.path.exists(cfile)):
-        logging.info("No such file " +  cfile)
+        print "No such file",cfile
         return
     with open(cfile, 'r') as f:
         data = json.load(f)
-    logging.info("About to load " + thisdate +  "with " + str(len(data)) + " comment groups")
+    print "About to load", thisdate, "with", len(data), "comment groups"
     if (len(data) == 0):
         return
     dbc.executemany(
@@ -86,19 +85,8 @@ def _arg_parser():
 
     return (user, passwd, start, end, dbname, source)
 
-def initLogging():
-    today = datetime.now().date().strftime("%Y-%m-%d")
-    logging.basicConfig(level=logging.DEBUG,
-        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-        datefmt='%m-%d %H:%M',
-        filename="~/Weiss/log/" + sys.argv[0] + "-" + today + '.log'
-        filemode='w')
-    logging.info('logger initialzed.')
-
 
 if __name__ == '__main__':
-    initLogging()
-
     user, passwd, start, end, dbname, source = _arg_parser()
 
     dbh = mdb.connect(host="localhost",

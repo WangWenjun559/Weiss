@@ -49,11 +49,11 @@ def _dict2tuple(entry):
 
 def run():
     if (not os.path.exists(efile)):
-        logging.info("No such file " +  efile)
+        print "No such file", efile
         return
     with open(efile, 'r') as f:
         data = json.load(f)
-    logging.info("About to load " + thisdate +  "with " + str(len(data)) + " entities")
+    print "About to load",  thisdate, "with", len(data), "entities"
     if (len(data) == 0):
         return
     dbc.executemany(
@@ -84,19 +84,8 @@ def _arg_parser():
 
     return (user, passwd, start, end, dbname, source)
 
-def initLogging():
-    today = datetime.now().date().strftime("%Y-%m-%d")
-    logging.basicConfig(level=logging.DEBUG,
-        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-        datefmt='%m-%d %H:%M',
-        filename="~/Weiss/log/" + sys.argv[0] + "-" + today + '.log'
-        filemode='w')
-    logging.info('logger initialzed.')
-
 
 if __name__ == '__main__':
-    initLogging()
-
     user, passwd, start, end, dbname, source = _arg_parser()
 
     dbh = mdb.connect(host="localhost",
