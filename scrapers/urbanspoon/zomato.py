@@ -1,18 +1,20 @@
 from bs4 import BeautifulSoup
 import re
 import urllib2
+import urllib
 import csv
 import json
 import datetime
 
-main_page = 'http://www.urbanspoon.com'
+main_page = 'http://www.zomato.com'
 
-restaurants = '/lb/23/best-restaurants-Pittsburgh'
+restaurants = '/pittsburgh/restaurants?sort=best'
 
-numPages = 2
+numPages = 1
 
 ## List that contains urls to each restaurant
 placeList = []
+
 
 ## Iterate over the number of pages specified above. Each page has 15 results on it.
 for i in range(numPages):
@@ -26,26 +28,26 @@ for i in range(numPages):
     soup = BeautifulSoup(page)
 
     ## Isolate search results which are contained in <section class="restaurant-results">
-    results = soup.findAll('section','restaurant-results')
-
+    results = soup.findAll('article','search-result')
 
     for result in results:
-        hrefs = result.findAll('a',href=True)
+        hrefs = result.findAll('a','result-title',href=True)
 
         for href in hrefs:
-            if '/lb/23/best-restaurants-Pittsburgh' in href['href']:
-                restaurants = href['href']
-            else:
-                placeList.append(main_page + href['href'])
+            placeList.append(href['href'])
 
 ## Comment Fields
 comment = []
 rating = []
 author = []
 commentTitle = []
-source = "urbanspoon"
+source = "zomato"
 commentID = []
 date = []
+
+## Words to ignore at beginning of review
+ignore = ['Rated','POSITIVE','NEGATIVE']
+
 
 ## Entity Fields
 description = []
@@ -56,6 +58,21 @@ entity = []
 placeCount = 1
 totalPlaces = len(placeList)
 
+
+def postRequest(url,restaurant_id,limit):
+    params = {'res_id':restaurant_id,'sort':'reviews-dd','limit':limit}
+
+    data = urllib.urlencode(params)
+    request = urllib2.Request(url, data)
+    response = urllib2.urlopen(request)
+    result = response.read()
+
+    data = json.loads(result)
+
+    return data
+
+
+
 ## Iterate over each restaurant's URL in placeList (list of URLs) and collect reviews from each one
 for place in placeList:
 
@@ -64,15 +81,16 @@ for place in placeList:
 
     restaurantURL = urllib2.urlopen(place)
     soup2 = BeautifulSoup(restaurantURL)
-        
+
     ## Grab food types served
     descText = ""
-    foodTypes = soup2.findAll('meta',{'property':'urbanspoon:cuisine'})
+    foodTypes = soup2.findAll('a',{'itemprop':"servesCuisine"})
     numTypes = len(foodTypes)
     counter = 1
 
+    ## Get food types served at restaurant
     for food in foodTypes:
-        foodType = food['content']
+        foodType = food.getText()
         descText += foodType
 
         if counter < numTypes:
@@ -80,54 +98,56 @@ for place in placeList:
 
         counter += 1
 
-    reviews = soup2.findAll('div','comment review')
+    ## Get restaurant id and name
+    entityID_val = soup2.find('div',{'itemprop':'ratingValue'})['data-res-id']
+    entity_val = soup2.find('span',{'itemprop':'name'}).getText()
 
-    for review in reviews:
-        ## Grab unix timestampe from data-date attribute in <li class="comment review"
-        date_val = review['data-date']
+    ## Send post request using entity_id
+    response = postRequest('https://www.zomato.com/php/filter_reviews.php',entityID_val,2)
 
-        ## 
-        authorID = review['data-user']
-        author_val = review.find('a',{'href':'/u/profile/' + authorID},text=True).getText()
+    reviews = response['html'].encode('utf-8')
 
-        ## Get restaurant id and name
-        entityID_val = re.findall(r'\d+',place)[1]
-        getEntity = soup2.find('title').getText().split(' - ')[0].strip()
-        entity_val = getEntity.encode('utf-8')
+    soup3 = BeautifulSoup(reviews)
 
-        ## Get Review information
-        reviewID_val = review['data-comment'].strip()
+    date_vals = soup3.findAll('time',{'itemprop':'datePublished'}) # grab value of key = datetime
 
-        ## Sets title to No Title if none is present
-        try:
-            reviewTitle_val = review.find('div','title',text=True).getText().encode('utf-8')
-        except AttributeError:
-            reviewTitle_val = "No Title"
+    reviewID_vals = soup3.findAll('div','res-review-body clearfix') # grab value of key = data-review-id
+    review_vals = soup3.findAll('div','rev-text')
+    reviewTitle_vals = [None] * len(review_vals) # No title to review on Zomato
+    author_vals = soup3.findAll('span','left mr5') # use .getText() to get text content of tag
 
-        review_val = review.find('div','body').getText().encode('utf-8')
 
-        ## Append data to lists
-        date.append(date_val)
-        author.append(author_val)
+    for i in range(len(review_vals)):
+        ## Comment Fields
+        review = review_vals[i].getText().strip()
+
+        ## deal with reviews beginning with unwanted content
+        startingPhrase = -1
+        counter = 0
+        for word in ignore:
+            if review.startswith(word,0,len(word)):
+                startingPhrase = counter
+            counter += 1
+
+        if startingPhrase > -1:
+            review = re.sub(ignore[startingPhrase] + '(.+)\n', '',review).strip()
+        comment.append(review)
+        rating.append(None)
+        author.append(author_vals[i].getText())
+        commentTitle.append(None)
+        commentID.append(reviewID_vals[i]['data-review-id'])
+        
+        datetimeStamp = date_vals[i]['datetime'].split(' ')
+        dateStamp = datetimeStamp[0]
+        date.append(dateStamp)
+
+        ## Entity Fields
         entityID.append(entityID_val)
         entity.append(entity_val)
-        commentID.append(reviewID_val)
-        comment.append(review_val)
-        commentTitle.append(reviewTitle_val)
         rating.append(-1)
         url.append(place)
         description.append(descText)
 
-
-
-# with open('reviews.csv','wb') as csvfile:
-#     csvwriter = csv.writer(csvfile, delimiter='\t')
-
-#     ## Write header
-#     csvwriter.writerow(['Date','Author','entityID','Entity Name','ReviewID','Review Title','Review','rating'])
-
-#     for i in range(len(date)):
-#         csvwriter.writerow([date[i],author[i],entityID[i],entity[i],commentID[i],comment[i],commentTitle[i],rating[i]])
 
 ## Print out stats
 print "Places " + str(len(placeList))
@@ -175,5 +195,3 @@ with open('urbanspoon_comments_' + dateStamp + '.json','w') as output1:
 ## Write entity json
 with open('urbanspoon_entities_' + dateStamp + '.json','w') as output1:
     json.dump(entityJSON, output1)
-
-
