@@ -1,4 +1,5 @@
 """
+Ming
 parser.http.movieParser module (imdb package).
 
 This module provides the classes (and the instances), used to parse the

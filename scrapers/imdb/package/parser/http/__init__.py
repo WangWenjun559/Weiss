@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import sys
 import socket
 import logging
+import time
 from urllib import FancyURLopener, quote_plus
 from codecs import lookup
 
@@ -462,9 +463,10 @@ class IMDbHTTPAccessSystem(IMDbBase):
         cont = None
         while True:
             try:
-                cont = self._retrieve(self, url)
-            except MissingInputError, e:
+                cont = self._retrieve(url)
+            except IMDbDataAccessError, e:
                 print e
+                time.sleep(2)
                 continue
             break
         return cont
