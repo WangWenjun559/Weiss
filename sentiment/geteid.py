@@ -4,7 +4,7 @@ This file get eid from db,
 
 Usage: python geteid.py database user password source startdate enddate
        source could be: imdb, MF
-       date in the format like: '2015-01-01'
+       date in the format like: 2015-01-01
 
 Note: Make sure you have already get sentiment score before running this script
 
@@ -48,7 +48,7 @@ def walk_through(directory,cur,start,end):
 			raise
 
 def main():
-	if len(sys.argv) < 4:
+	if len(sys.argv) < 7:
 		print "Usage: python geteid.py db usr pwd source startdate enddate"
 		print "source may be: imdb, MF"
 		print "Date in the format like: 2015-01-01"
