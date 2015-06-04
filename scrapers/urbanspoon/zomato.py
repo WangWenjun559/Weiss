@@ -10,17 +10,25 @@ main_page = 'http://www.zomato.com'
 
 restaurants = '/pittsburgh/restaurants?sort=best'
 
+
+## Determine the starting page value to begin scraping on
+# Finds todays date (also used to create json file name)
+today = datetime.datetime.now()
+weekday = today.weekday()
+startPage = ( weekday * 20 ) + 1 # There are currently 148 pages of results. 7 days of 20 pages give us 140 pages.
+
+## scrape numPages of search results starting on startPage
 numPages = 20
 
 ## List that contains urls to each restaurant
 placeList = []
 
 
-## Iterate over the number of pages specified above. Each page has 15 results on it.
-for i in range(numPages):
+## Iterate over the number of pages specified above. Each page has 30 restaurants on it.
+for i in range(startPage, startPage + numPages):
 
     ## Changes page number for results
-    pagination = "&page" + str(i+1)
+    pagination = "&page" + str(i)
 
     ## Assemble url
     url = main_page + restaurants + pagination
@@ -185,7 +193,6 @@ for nameID in uniqueEntities:
     entityJSON.append(entityDict)
 
 ## Write the two jsons
-today = datetime.datetime.now()
 year = today.year
 month = today.month
 day = today.day
