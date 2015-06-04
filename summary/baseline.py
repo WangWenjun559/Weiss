@@ -22,13 +22,15 @@ import sys
 import math
 import nltk
 
+#Select 10% of sentences into the summary
+PERCENT = 0.1
 '''
-walk_through - go through top 100 entities from a specific source
+walk_through - go through top 50 entities from a specific source
 '''
 def walk_through(db,cur,source):
 	sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 	geteids = 'SELECT eid FROM entity WHERE source = "' + source \
-	+ '" LIMIT 100;'
+	+ '" LIMIT 50;'
 	cur.execute(geteids)
 	rows = cur.fetchall()
 	for row in rows:
@@ -58,14 +60,14 @@ def walk_through(db,cur,source):
 				cid = onerow[0]
 				comment = onerow[1]
 				sentence_list = sent_tokenizer.tokenize(comment)
-				#Select 10% of sentences into the summary
-				num = int(math.ceil(0.1*len(sentence_list)))
+				#Select some portion of sentences into the summary
+				num = int(math.ceil(PERCENT*len(sentence_list)))
 				#Random
 				randomstr = random_comment(sentence_list,num)
 				
 				insert = 'INSERT INTO summary(cid,mid,score,body) VALUES\
 				('+ str(cid) +',1,-1,"' + randomstr + '")'
-				print insert
+				#print insert
 				cur.execute(insert)
 				'''
 				cur.commit()
@@ -111,8 +113,6 @@ def main():
 
 	db = mdb.connect(host="localhost",user=usr,passwd=pwd,db=database)
 	cur = db.cursor()
-
-	sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
 	walk_through(db,cur,source)
 
