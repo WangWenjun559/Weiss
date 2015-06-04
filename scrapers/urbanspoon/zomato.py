@@ -10,7 +10,7 @@ main_page = 'http://www.zomato.com'
 
 restaurants = '/pittsburgh/restaurants?sort=best'
 
-numPages = 1
+numPages = 20
 
 ## List that contains urls to each restaurant
 placeList = []
@@ -19,10 +19,15 @@ placeList = []
 ## Iterate over the number of pages specified above. Each page has 15 results on it.
 for i in range(numPages):
 
-    print "Collecting content from url: " + restaurants
+    ## Changes page number for results
+    pagination = "&page" + str(i+1)
 
+    ## Assemble url
+    url = main_page + restaurants + pagination
     ## Send http request to url and receive response
-    page = urllib2.urlopen(main_page + restaurants)
+    page = urllib2.urlopen(url)
+
+    print "Collecting content from url: " + url
 
     ## Convert http response to text
     soup = BeautifulSoup(page)
@@ -103,7 +108,7 @@ for place in placeList:
     entity_val = soup2.find('span',{'itemprop':'name'}).getText()
 
     ## Send post request using entity_id
-    response = postRequest('https://www.zomato.com/php/filter_reviews.php',entityID_val,2)
+    response = postRequest('https://www.zomato.com/php/filter_reviews.php',entityID_val,200)
 
     reviews = response['html'].encode('utf-8')
 
@@ -189,9 +194,9 @@ day = today.day
 dateStamp = str(year) + "-" + str("%02d" % (month)) + "-" + str("%02d" % (day))
 
 ## write comments json
-with open('urbanspoon_comments_' + dateStamp + '.json','w') as output1:
+with open(source + '_comments_' + dateStamp + '.json','w') as output1:
     json.dump(commentJSON, output1)
 
 ## Write entity json
-with open('urbanspoon_entities_' + dateStamp + '.json','w') as output1:
+with open(source + '_entities_' + dateStamp + '.json','w') as output1:
     json.dump(entityJSON, output1)

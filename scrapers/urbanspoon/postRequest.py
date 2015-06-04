@@ -3,6 +3,7 @@ import urllib
 import json
 from bs4 import BeautifulSoup
 import datetime
+import re
 
 ## Comment Fields
 comment = []
@@ -46,7 +47,18 @@ ignore = ['Rated','POSITIVE','NEGATIVE']
 for i in range(len(review_vals)):
     ## Comment Fields
     review = review_vals[i].getText().strip()
-    comment.append()
+
+    ## deal with reviews beginning with unwanted content
+    startingPhrase = -1
+    counter = 0
+    for word in ignore:
+        if review.startswith(word,0,len(word)):
+            startingPhrase = counter
+        counter += 1
+
+    if startingPhrase > -1:
+        review = re.sub(ignore[startingPhrase] + '(.+)\n', '',review).strip()
+    comment.append(review)
     rating.append(None)
     author.append(author_vals[i].getText())
     commentTitle.append(None)
