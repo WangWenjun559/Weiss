@@ -36,5 +36,5 @@ fs.readFile(fileName,'utf8',function(err, data){
                 }
         }
 	var text = JSON.stringify(data)
-        fs.appendFile(processed,text,'utf8')
+        fs.writeFile(processed,text,'utf8')
 })

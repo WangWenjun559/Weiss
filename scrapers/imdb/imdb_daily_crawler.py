@@ -18,10 +18,8 @@ end = start
 release_date = ''
 cfile = ''
 efile = ''
-#query = "groups=now-playing-us&title_type=feature"
-query = "groups=now-playing-us&release_date=2015-01-01,2016-01-01&title_type=feature&user_rating=9.0,10"
-#query = "companies=fox&groups=top_250,now-playing-us&title_type=feature"
-
+query = "groups=now-playing-us&title_type=feature"
+#query = "release_date=2015-01-01,2015-06-02&title_type=feature"
 
 def getToCrawl():
     with open(historyfile, 'r') as f:

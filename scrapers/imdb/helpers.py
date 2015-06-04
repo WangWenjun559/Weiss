@@ -33,7 +33,6 @@ def get_movie_id_adv(query):
         print "There are", numMovies, "IDs"
         numPages = numMovies / 50 + 1   ## each page has at most 50 IDs
         listOfListOfIds = map(lambda i: _getIdAdv(query, 1 + 50*i), xrange(numPages))  ## +1 needed , since 1 indexed
-        print listOfListOfIds
         return map(lambda x: x['id'], [ID for listOfIds in listOfListOfIds for ID in listOfIds])
     else:
         return []

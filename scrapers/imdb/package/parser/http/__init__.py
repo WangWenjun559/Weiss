@@ -439,6 +439,7 @@ class IMDbHTTPAccessSystem(IMDbBase):
         else:
             self.urlOpener.del_header('Cookie')
 
+
     def _retrieve(self, url, size=-1, _noCookies=False):
         """Retrieve the given URL."""
         ##print url
@@ -456,6 +457,18 @@ class IMDbHTTPAccessSystem(IMDbBase):
             if _noCookies and _cookies:
                 self.urlOpener.set_header('Cookie', _cookies)
         return ret
+
+    def _myRetrieve(self, url):
+        cont = None
+        while True:
+            try:
+                cont = self._retrieve(self, url)
+            except MissingInputError, e:
+                print e
+                continue
+            break
+        return cont
+
 
     def _get_search_content(self, kind, ton, results):
         """Retrieve the web page for a given search.
@@ -608,14 +621,14 @@ class IMDbHTTPAccessSystem(IMDbBase):
     ## added by Ming ###############
 
     def get_movie_user_reviews(self, movieID, start):
-        cont = self._retrieve(self.urls['movie_main'] % movieID + 'reviews?start='+str(start))
+        cont = self._myRetrieve(self.urls['movie_main'] % movieID + 'reviews?start='+str(start))
         return self.mProxy.reviews_parser.parse(cont)
 
     def get_movie_user_reviews_parser(self):
         return self.mProxy.reviews_parser
 
     def get_movie_user_reviews_dom(self, movieID, start):
-        cont = self._retrieve(self.urls['movie_main'] % movieID + 'reviews?start='+str(start))
+        cont = self._myRetrieve(self.urls['movie_main'] % movieID + 'reviews?start='+str(start))
         return cont
 
     def get_movie_id_parser(self):
@@ -623,16 +636,16 @@ class IMDbHTTPAccessSystem(IMDbBase):
 
 
     def get_movie_id_dom(self, release_date, start):
-        cont = self._retrieve("http://www.imdb.com/search/title?release_date=" + str(release_date) + "&start=" + str(start) + "&title_type=feature")
+        cont = self._myRetrieve("http://www.imdb.com/search/title?release_date=" + str(release_date) + "&start=" + str(start) + "&title_type=feature")
         return cont
 
     def get_movie_id(self, release_date, start):
-        cont = self._retrieve("http://www.imdb.com/search/title?release_date=" + str(release_date) + "&start=" + str(start) + "&title_type=feature")
+        cont = self._myRetrieve("http://www.imdb.com/search/title?release_date=" + str(release_date) + "&start=" + str(start) + "&title_type=feature")
         return self.mProxy.id_parser.parse(cont)
 
     def get_movie_id_adv(self, query, start):
         #query = '&'.join(map(lambda k, v: "%s=%s" % (k, v), params))
-        cont = self._retrieve("http://www.imdb.com/search/title?%s&start=%s" % (query, str(start)))
+        cont = self._myRetrieve("http://www.imdb.com/search/title?%s&start=%s" % (query, str(start)))
         return self.mProxy.id_parser.parse(cont)
 
 
