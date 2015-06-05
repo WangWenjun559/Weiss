@@ -1,3 +1,5 @@
+# -- coding: utf-8 --
+
 from bs4 import BeautifulSoup
 import re
 import urllib2
@@ -9,8 +11,8 @@ import datetime
 main_page = 'http://www.zomato.com'
 
 restaurants = '/pittsburgh/restaurants?sort=best'
-path="/home/mingf/data/"
-
+#path="/home/mingf/data/"
+path = ''
 
 ## Determine the starting page value to begin scraping on
 # Finds todays date (also used to create json file name)
@@ -19,7 +21,7 @@ weekday = today.weekday()
 startPage = ( weekday * 20 ) + 1 # There are currently 148 pages of results. 7 days of 20 pages give us 140 pages.
 
 ## scrape numPages of search results starting on startPage
-numPages = 20
+numPages = 1
 
 ## List that contains urls to each restaurant
 placeList = []
@@ -29,7 +31,7 @@ placeList = []
 for i in range(startPage, startPage + numPages):
 
     ## Changes page number for results
-    pagination = "&page" + str(i)
+    pagination = "&page=" + str(i)
 
     ## Assemble url
     url = main_page + restaurants + pagination
@@ -48,7 +50,8 @@ for i in range(startPage, startPage + numPages):
         hrefs = result.findAll('a','result-title',href=True)
 
         for href in hrefs:
-            placeList.append(href['href'])
+            placeList.append(href['href'].encode('utf-8'))
+
 
 ## Comment Fields
 comment = []
@@ -86,14 +89,15 @@ def postRequest(url,restaurant_id,limit):
     return data
 
 
-
 ## Iterate over each restaurant's URL in placeList (list of URLs) and collect reviews from each one
 for place in placeList:
 
     print str(placeCount) + "/" + str(totalPlaces) + " Collecting Reviews from: " + place
     placeCount += 1
 
-    restaurantURL = urllib2.urlopen(place)
+    ## Converts weird characters ir url to ascii, url safe characters
+    safeUrl = urllib2.quote(place,':/')
+    restaurantURL = urllib2.urlopen(safeUrl)
     soup2 = BeautifulSoup(restaurantURL)
 
     ## Grab food types served
@@ -197,6 +201,9 @@ for nameID in uniqueEntities:
 year = today.year
 month = today.month
 day = today.day
+
+print len(commentByEntity)
+print len(set(commentByEntity))
 
 ## Create date stamp string
 dateStamp = str(year) + "-" + str("%02d" % (month)) + "-" + str("%02d" % (day))
