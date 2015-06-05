@@ -9,6 +9,7 @@ import datetime
 main_page = 'http://www.zomato.com'
 
 restaurants = '/pittsburgh/restaurants?sort=best'
+path="/home/mingf/data/"
 
 
 ## Determine the starting page value to begin scraping on
@@ -149,7 +150,7 @@ for place in placeList:
         author.append(author_vals[i].getText())
         commentTitle.append(None)
         commentID.append(reviewID_vals[i]['data-review-id'])
-        
+
         datetimeStamp = date_vals[i]['datetime'].split(' ')
         dateStamp = datetimeStamp[0]
         date.append(dateStamp)
@@ -201,9 +202,9 @@ day = today.day
 dateStamp = str(year) + "-" + str("%02d" % (month)) + "-" + str("%02d" % (day))
 
 ## write comments json
-with open(source + '_comments_' + dateStamp + '.json','w') as output1:
+with open(path + source + '_comments_' + dateStamp + '.json','w') as output1:
     json.dump(commentJSON, output1)
 
 ## Write entity json
-with open(source + '_entities_' + dateStamp + '.json','w') as output1:
+with open(path + source + '_entities_' + dateStamp + '.json','w') as output1:
     json.dump(entityJSON, output1)
