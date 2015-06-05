@@ -21,7 +21,7 @@ weekday = today.weekday()
 startPage = ( weekday * 20 ) + 1 # There are currently 148 pages of results. 7 days of 20 pages give us 140 pages.
 
 ## scrape numPages of search results starting on startPage
-numPages = 1
+numPages = 20
 
 ## List that contains urls to each restaurant
 placeList = []
