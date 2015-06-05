@@ -25,3 +25,6 @@ scrapers/urbanspoon/*.csv
 
 # Ignore Weiss (webapp directory)
 weiss/*
+
+# Mysql
+mysql/dbbackup.sh
