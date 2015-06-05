@@ -11,8 +11,8 @@ import datetime
 main_page = 'http://www.zomato.com'
 
 restaurants = '/pittsburgh/restaurants?sort=best'
-#path="/home/mingf/data/"
-path = ''
+path="/home/mingf/data/"
+#path = ''
 
 ## Determine the starting page value to begin scraping on
 # Finds todays date (also used to create json file name)
@@ -202,8 +202,6 @@ year = today.year
 month = today.month
 day = today.day
 
-print len(commentByEntity)
-print len(set(commentByEntity))
 
 ## Create date stamp string
 dateStamp = str(year) + "-" + str("%02d" % (month)) + "-" + str("%02d" % (day))
