@@ -3,16 +3,16 @@
 from __future__ import absolute_import
 from __future__ import division, print_function, unicode_literals
 
-
 from collections import namedtuple
 from operator import attrgetter
 from ..utils import ItemsCount
 from .._compat import to_unicode
 from ..nlp.stemmers import null_stemmer
 
+from ..namedlist import namedlist
+from ..reranker import MMR
 
-SentenceInfo = namedtuple("SentenceInfo", ("sentence", "order", "rating",))
-
+SentenceInfo = namedlist("SentenceInfo", ("sentence", "order", "rating",))
 
 class AbstractSummarizer(object):
     def __init__(self, stemmer=null_stemmer):
@@ -30,6 +30,7 @@ class AbstractSummarizer(object):
     def normalize_word(self, word):
         return to_unicode(word).lower()
 
+
     def _get_best_sentences(self, sentences, count, rating, *args, **kwargs):
         rate = rating
         if isinstance(rating, dict):
@@ -40,12 +41,14 @@ class AbstractSummarizer(object):
             for o, s in enumerate(sentences))
 
         # sort sentences by rating in descending order
-        infos = sorted(infos, key=attrgetter("rating"), reverse=True)
+        #infos = sorted(infos, key=attrgetter("rating"), reverse=True)
+        infos = sorted(infos, key=attrgetter("rating"),reverse=True)
         # get `count` first best rated sentences
         if not isinstance(count, ItemsCount):
             count = ItemsCount(count)
         infos = count(infos)
+        select_lst = MMR(infos,count)
         # sort sentences by their order in document
-        infos = sorted(infos, key=attrgetter("order"))
+        infos = sorted(select_lst, key=attrgetter("order"))
 
-        return tuple(i.sentence for i in infos)
+        return tuple((i.sentence,i.rating) for i in infos)
