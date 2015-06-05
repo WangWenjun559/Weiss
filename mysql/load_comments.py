@@ -41,8 +41,8 @@ def _dict2tuple(entry):
     return (entry['eid'],
             entry['body'],
             entry['rating'] or '-1',
-            entry['author'],
-            entry['title'],
+            entry['author'] or u'',
+            entry['title'] or u'',
             entry['time'],
             entry['sentiment']
             )
