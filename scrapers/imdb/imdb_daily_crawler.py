@@ -7,13 +7,15 @@ from datetime import date
 from datetime import datetime
 from dateutil.rrule import rrule, DAILY
 from multiprocessing import Pool
-
+import MySQLdb as mdb
 
 datadir = '/home/mingf/data/'
 source = 'imdb'
 homedir = '/home/mingf/Weiss/'
 module = 'scrapers/'
 historyfile = homedir + module + source + '/crawled.txt'    ## file that stores the movie id crawled
+dbsetting = homedir + module + source + '/dbsetting.json'
+
 start = datetime.now().date()
 #start = date(2015, 6, 3)
 end = start
@@ -24,9 +26,17 @@ query = "groups=now-playing-us&title_type=feature"
 #query = "release_date=2015-01-01,2015-06-03&title_type=feature"
 
 
+def getHistory():
+    with open(dbsetting, 'r') as f:
+        setting = json.load(f)
+    dbh = mdb.connect(host=setting['host'], user=setting['user'], passwd=setting['passed'], db=setting['db'])
+    dbc = dbh.cursor()
+    dbc.execute("select id, count(cid) from comment, entity where comment.eid = entity.eid and source='imdb' group by comment.eid")
+    res = dbc.fetchall()
+    return {ID: num for ID, num in res}
+
 def getToCrawl():
-    with open(historyfile, 'r') as f:
-        crawled = json.load(f)
+    crawled = getHistory()
     crawledIDs = Set(crawled.keys())
     IDs = helpers.get_movie_id_adv(query)
     print "Num of ID in the query", len(IDs)
