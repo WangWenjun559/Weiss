@@ -1,3 +1,5 @@
+# This script crawle now-playing movie comments from imdb
+# Author: Ming Fang <mingf@cs.cmu.edu>
 #!/usr/bin/python
 import sys
 from sets import Set
