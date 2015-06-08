@@ -54,11 +54,15 @@ far from classy or romantic. '''
 
 texts = [text1, text2, text3]
 
-def bestComment(textList):
+class prChoice():
+    def two():
+        return 2
+
+def bestComment(comment_list):
     commentList = []
 
-    for text in textList:
-        wordList = tokenize(text)
+    for comment in comment_list:
+        wordList = tokenize(comment)
         noStop = removeStopWords(wordList)
         noNums = removeNumbers(noStop)
 
