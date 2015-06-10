@@ -97,58 +97,78 @@ for place in placeList:
 
     ## Converts weird characters ir url to ascii, url safe characters
     safeUrl = urllib2.quote(place,':/')
-    restaurantURL = urllib2.urlopen(safeUrl)
+
+    ## Try to send http request to url. Skips url if there are any problems
+    try:
+        restaurantURL = urllib2.urlopen(safeUrl)
+    except:
+        print "Problem with URL: " + safeUrl
+        print "skipping to the next URL"
+        continue
+
     soup2 = BeautifulSoup(restaurantURL)
 
-    ## Grab food types served
-    descText = ""
-    foodTypes = soup2.findAll('a',{'itemprop':"servesCuisine"})
-    numTypes = len(foodTypes)
-    counter = 1
+    ## Tries to grab restaurant data and skips any restaurants where it runs into problems
+    try:
+        ## Grab food types served
+        descText = ""
+        foodTypes = soup2.findAll('a',{'itemprop':"servesCuisine"})
+        numTypes = len(foodTypes)
+        counter = 1
 
-    ## Get food types served at restaurant
-    for food in foodTypes:
-        foodType = food.getText()
-        descText += foodType
+        ## Get food types served at restaurant
+        for food in foodTypes:
+            foodType = food.getText()
+            descText += foodType
 
-        if counter < numTypes:
-            descText += ", "
+            if counter < numTypes:
+                descText += ", "
 
-        counter += 1
-
-    ## Get restaurant id and name
-    entityID_val = soup2.find('div',{'itemprop':'ratingValue'})['data-res-id']
-    entity_val = soup2.find('span',{'itemprop':'name'}).getText()
-
-    ## Send post request using entity_id
-    response = postRequest('https://www.zomato.com/php/filter_reviews.php',entityID_val,200)
-
-    reviews = response['html'].encode('utf-8')
-
-    soup3 = BeautifulSoup(reviews)
-
-    date_vals = soup3.findAll('time',{'itemprop':'datePublished'}) # grab value of key = datetime
-
-    reviewID_vals = soup3.findAll('div','res-review-body clearfix') # grab value of key = data-review-id
-    review_vals = soup3.findAll('div','rev-text')
-    reviewTitle_vals = [None] * len(review_vals) # No title to review on Zomato
-    author_vals = soup3.findAll('span','left mr5') # use .getText() to get text content of tag
-
-
-    for i in range(len(review_vals)):
-        ## Comment Fields
-        review = review_vals[i].getText().strip()
-
-        ## deal with reviews beginning with unwanted content
-        startingPhrase = -1
-        counter = 0
-        for word in ignore:
-            if review.startswith(word,0,len(word)):
-                startingPhrase = counter
             counter += 1
 
-        if startingPhrase > -1:
-            review = re.sub(ignore[startingPhrase] + '(.+)\n', '',review).strip()
+        ## Get restaurant id and name
+        entityID_val = soup2.find('div',{'itemprop':'ratingValue'})['data-res-id']
+        entity_val = soup2.find('span',{'itemprop':'name'}).getText()
+
+        ## Send post request using entity_id
+        response = postRequest('https://www.zomato.com/php/filter_reviews.php',entityID_val,200)
+
+        reviews = response['html'].encode('utf-8')
+
+        soup3 = BeautifulSoup(reviews)
+
+        date_vals = soup3.findAll('time',{'itemprop':'datePublished'}) # grab value of key = datetime
+
+        reviewID_vals = soup3.findAll('div','res-review-body clearfix') # grab value of key = data-review-id
+        review_vals = soup3.findAll('div','rev-text')
+        reviewTitle_vals = [None] * len(review_vals) # No title to review on Zomato
+        author_vals = soup3.findAll('span','left mr5') # use .getText() to get text content of tag
+    except:
+        print "Problem processing content from URL: " + safeUrl 
+        print "skipping to the next URL"
+        continue
+
+    for i in range(len(review_vals)):
+        ## Attempts to grab review content, skips reviews where it runs into problems
+        try:
+            ## Comment Fields
+            review = review_vals[i].getText().strip()
+
+            ## deal with reviews beginning with unwanted content
+            startingPhrase = -1
+            counter = 0
+            for word in ignore:
+                if review.startswith(word,0,len(word)):
+                    startingPhrase = counter
+                counter += 1
+
+            if startingPhrase > -1:
+                review = re.sub(ignore[startingPhrase] + '(.+)\n', '',review).strip()
+        except:
+            print "Problem with processing review from URL: " + safeUrl
+            print "skipping to the next URL"
+            continue
+
         comment.append(review)
         rating.append(None)
         author.append(author_vals[i].getText())
