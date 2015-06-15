@@ -1,3 +1,13 @@
+'''
+This file select 10 entities from each source for evaluation. 
+The entities should meet these requirements:
+1. The number of positive comments should be more than 5 and fewer than 30
+2. The number of negative comments should be more than 5 and fewer than 30
+3. The number of words of all positive/negative comments of the entity should be in the range 500 - 2100.
+
+Author: Wenjun Wang
+Date: June 12, 2015
+'''
 # -*- coding: utf8 -*-
 import MySQLdb as mdb
 #import nltk
@@ -53,12 +63,10 @@ def filtering(db,cur,source):
         if num_word < 500 or num_word > 2100:continue
         
         count += 1
-        print(str(eid))
         insert = 'INSERT INTO mini_entity(eid) VALUES (' + str(eid) + ')'
         cur.execute(insert)
         db.commit()
         if count == REQUIRE:break
-    #print(str(count))
 
 def main():
     source = sys.argv[1]
