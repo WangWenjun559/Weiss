@@ -5,30 +5,6 @@ import nltk
 import sys
 import math
 
-def stemming(sentences):
-	"""	
-		Input:  a list of cleaned sentences (i.e. stop words removed)
-		Output: a list of sentenses with tokens stemed,
-	"""
-	porter = nltk.PorterStemmer()
-	stemedSentences = []
-	for i in xrange(0,len(sentences)):
-		#print "Processing sentence: ", sentence
-		tokens = nltk.word_tokenize(sentences[i])
-		stemedTokens = [porter.stem(t) for t in tokens]
-		stemedSentences += [' '.join(stemedTokens)]
-	return stemedSentences
-
-def stopword_removal(sentence):
-	stopwords = set(["comment","opinion","view","review","can","give","me","you","i","tell"])
-	clean_sentence = []
-	tokens = nltk.word_tokenize(sentence)
-	for i in xrange(0,len(tokens)):
-		if (tokens[i].strip("s")).lower() in stopwords:
-			tokens[i] = ''
-	clean_sentence += [' '.join(tokens).strip()]
-	return clean_sentence
-
 def naive_train(train):
 	counts = {}
 	vocab = set()
