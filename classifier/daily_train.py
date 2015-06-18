@@ -18,9 +18,10 @@ from liblinearutil import *
 
 def main():
 	# Create appropriate input file for LibLINEAR (SVM)
-    train_file = 'training'
-    feature_file = 'training_file'
-    feature_list = feature_generator(train_file)
+    train_file = 'training' # name of original training file
+    feature_file = 'training_file' # name of transformed training file
+    feature_output = 'features' # name of feature file
+    feature_list = feature_generator(train_file, feature_output)
     convert_file(train_file, feature_list, feature_file)
     # Use LibLINEAR to train the model
     y, x = svm_read_problem('training_file')
