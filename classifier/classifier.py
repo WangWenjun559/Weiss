@@ -1,3 +1,6 @@
+"""
+This file implements a simple naive bayes classfier, which is not used in the project
+"""
 import nltk
 import sys
 import math
