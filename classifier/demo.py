@@ -1,5 +1,8 @@
 """
 This is a demo about how to use LibLINEAR to do the prediction
+
+Author: Wenjun Wang
+Date: June 18, 2015
 """
 import pickle
 
