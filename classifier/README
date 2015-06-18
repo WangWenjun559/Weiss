@@ -1,0 +1,13 @@
+-------------------
+Author: Wenjun Wang
+Date: June 18, 2015
+-------------------
+In the training file, each line is a instance, which is started by a label.
+The definition of label is listed as follows:
+
+Label	Meaning
+1		Next Random Comment
+2		Opposite Comment
+3		Positive Comment
+4 		Negative Comment
+5		Next Entity
