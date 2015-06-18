@@ -1,5 +1,11 @@
 """
 This file implements a simple naive bayes classfier, which is not used in the project
+=====================================================================================
+
+Usage: python classifier.py query
+
+Author: Wenjun Wang
+Date: June 11, 2015
 """
 import nltk
 import sys
