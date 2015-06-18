@@ -1,7 +1,8 @@
 """
 This file
 - Transforms a training file to the input format required by LibLINEAR.
-- Convert a query to the format required by LibLINEAR when doing prediction. 
+- Convert a query to the format required by LibLINEAR when doing prediction.
+- Output feature file for prediction.  
 ============================================================================
 
 Original training file format, for each line:
@@ -29,6 +30,7 @@ Date: June 18, 2015
 """
 
 import nltk
+import pickle
 
 def feature_sort(row):
     """Sort feature
@@ -84,6 +86,7 @@ def partition(row,first,last):
     row[rightmark] = temp
 
     return rightmark
+
 """
 The following two functions are not used now, 
 they may be helpful in the future when doing feature engineering or data preprocessing
@@ -124,7 +127,7 @@ def stopword_removal(sentence):
     clean_sentence += [' '.join(tokens).strip()]
     return clean_sentence
 
-def feature_generator(train_file):
+def feature_generator(train_file, features):
     """Generate a feature list
 
     Go through all tokens (unigram) in the training file 
@@ -132,16 +135,20 @@ def feature_generator(train_file):
 
     Arg:
         train_file: the name of the original training file
+        features: the name of the output feature file
 
     Return:
         feature_list: a list of unique features
+        Create a new feature file
     """
     feature_set = set()
+    output = open(features,'w')
     for line in open(train_file):
         line = line.lower()
         feature = set(nltk.word_tokenize(line.split('\t')[1]))
         feature_set |= feature
     feature_list = list(feature_set)
+    pickle.dump(feature_list, output)
     return feature_list
 
 def convert_file(train_file, feature_list, feature_file):
@@ -210,7 +217,8 @@ def main():
     """
     train_file = 'training'
     feature_file = 'training_file'
-    feature_list = feature_generator(train_file)
+    features = 'features'
+    feature_list = feature_generator(train_file, features)
     convert_file(train_file, feature_list, feature_file)
 
 
