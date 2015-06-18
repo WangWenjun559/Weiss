@@ -207,9 +207,12 @@ def convert_query(query, feature_list, goal):
         return feature_string
     else:
         onerow = {}
-        for f in features:
-            onerow[feature_list.index(f)+1] = 1
-
+        try:
+            for f in features:
+                onerow[feature_list.index(f)+1] = 1
+        except ValueError:
+            #print '%s is not in the feature list' % f.lower()
+            pass
         return [onerow]
 
 def main():
