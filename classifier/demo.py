@@ -1,5 +1,8 @@
 """
 This is a demo about how to use LibLINEAR to do the prediction
+==============================================================
+
+Usage: python demo.py 
 
 Author: Wenjun Wang
 Date: June 18, 2015
