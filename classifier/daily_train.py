@@ -25,7 +25,7 @@ def main():
     convert_file(train_file, feature_list, feature_file)
     # Use LibLINEAR to train the model
     y, x = svm_read_problem('training_file')
-    m = train(y, x, '-c 1 -s 1 -B 1 -e 0.01 -v 5 -q')
+    m = train(y, x, '-c 2 -s 5 -B 1 -e 0.01 -v 5 -q')
     save_model('model', m)
 
 if __name__ == '__main__':
