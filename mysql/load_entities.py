@@ -27,9 +27,12 @@ import sys
 import json
 import argparse
 import os.path
+from sets import Set
+from multiprocessing import Pool
 
 datadir = '/home/mingf/data/'
 homedir = '/home/mingf/Weiss/'
+dbsetting = '/home/mingf/Weiss/scrapers/imdb/dbsetting.json'
 module = 'mysql/'
 release_date = ''
 cfile = ''
@@ -46,8 +49,20 @@ def _dict2tuple(entry):
             entry['name']
             )
 
+def getHistory(source):
+        with open(dbsetting, 'r') as f:
+            setting = json.load(f)
+        dbh = mdb.connect(host=setting['host'], user=setting['user'], passwd=setting['passed'], db=setting['db'])
+        dbc = dbh.cursor()
+        dbc.execute("select id from entity where source='%s'" % source)
+        res = dbc.fetchall()
+        pool = Pool(processes=6)
+        IDs = pool.map(lambda x: x[0], res)
+        pool.close()
+        pool.join()
+        return Set(IDs);
 
-def run():
+def run(IDs):
     if (not os.path.exists(efile)):
         print "No such file", efile
         return
@@ -56,6 +71,7 @@ def run():
     print "About to load",  thisdate, "with", len(data), "entities"
     if (len(data) == 0):
         return
+    data = filter(lambda entry: entry['id'] not in IDs, data) # filter out duplicate entities
     dbc.executemany(
         """INSERT INTO entity (id, source, description, url, tid, name)
         VALUES (%s, %s, %s, %s, %s, %s)""",
