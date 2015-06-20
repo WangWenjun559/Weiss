@@ -56,11 +56,8 @@ def getHistory(source):
         dbc = dbh.cursor()
         dbc.execute("select id from entity where source='%s'" % source)
         res = dbc.fetchall()
-        pool = Pool(processes=6)
-        IDs = pool.map(lambda x: x[0], res)
-        pool.close()
-        pool.join()
-        return Set(IDs);
+        IDs = map(lambda x: x[0], list(res))
+        return Set(IDs)
 
 def run(IDs):
     if (not os.path.exists(efile)):
@@ -72,6 +69,7 @@ def run(IDs):
     if (len(data) == 0):
         return
     data = filter(lambda entry: entry['id'] not in IDs, data) # filter out duplicate entities
+    print "After filtering,", len(data), "entities left"
     dbc.executemany(
         """INSERT INTO entity (id, source, description, url, tid, name)
         VALUES (%s, %s, %s, %s, %s, %s)""",
@@ -115,10 +113,12 @@ if __name__ == '__main__':
     dbc.execute('SET CHARACTER SET utf8;')
     dbc.execute('SET character_set_connection=utf8;')
 
+
     for dt in rrule(DAILY, dtstart = start, until = end):
+        IDs = getHistory(source)
         thisdate = dt.strftime('%Y-%m-%d')
         release_date = '%s,%s' % (thisdate, thisdate)  ## the release date range to crawl
         efile = '%s%s_entities_%s.json' % (datadir, source, thisdate)
-        run()
+        run(IDs)
 
     dbh.close()
