@@ -30,10 +30,13 @@ feature_list = pickle.load(infile)
 # Class labels
 y = [1,2,3,4,5]
 # Example query
-query = 'next comment'
+query = 'Alan Black'
 # Convert query
 x = convert_query(query, feature_list, 'test')
 # Do the prediction
 p_label, p_val = predict(y, x, m, '-b 0')
+# Cannot classify it to any class
+if p_val[0][int(p_label[0])-1] == 0:
+    p_label[0] = -1
 print p_label #predict class/label
 print p_val #svm value for each class/label
