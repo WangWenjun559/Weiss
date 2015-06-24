@@ -6,12 +6,12 @@ In the training file, each line is a instance, which is started by a label.
 The definition of label is listed as follows:
 
 Label	  Meaning
-0 Type Selection
+0     Type Selection
 1	Next Random Comment
 2	Opposite Comment
 3	Positive Comment
 4 	Negative Comment
 5	Next Entity
-6 Sentiment Statistics
-7 Entity Selection (by Title)
-8 Entity Selection (by Name)
+6     Sentiment Statistics
+7     Entity Selection (by Title)
+8     Entity Selection (by Name)
