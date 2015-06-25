@@ -16,6 +16,8 @@ from feature import feature_generator
 from feature import convert_file
 from liblinearutil import *
 
+import time
+
 def main():
 	# Create appropriate input file for LibLINEAR (SVM)
     train_file = 'training' # name of original training file
@@ -26,7 +28,8 @@ def main():
     # Use LibLINEAR to train the model
     y, x = svm_read_problem('training_file')
     m = train(y, x, '-c 2 -s 5 -B 1 -e 0.01 -v 5 -q')
-    save_model('model', m)
+    date = time.strftime("%Y-%m-%d")
+    save_model('model_'+date, m)
 
 if __name__ == '__main__':
     main()

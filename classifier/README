@@ -11,3 +11,7 @@ Label	  Meaning
 3	Positive Comment
 4 	Negative Comment
 5	Next Entity
+6       Sentiment Statistics
+7       Entity Selection (by Title)
+8       Entity Selection (by Description)
+9       Type Selection
