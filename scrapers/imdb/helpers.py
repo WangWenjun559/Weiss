@@ -82,7 +82,7 @@ def get_movie_reviews(IDandNum):
     numPages = (numRvws-1) / 10 + 1   ## each page has at most 10 reviews  - 1 # -1 needed, since 0-indexed
     func = partial(_getReview, ID)
     listOfListOfRvws = map(func, range(numPages))
-    return [rvw for listOfRvws in listOfListOfRvws for rvw in listOfRvws][:numRvws]
+    return [rvw for listOfRvws in listOfListOfRvws for rvw in listOfRvws]
 
 def get_review_amount(ID):
     data = ia.get_movie_user_reviews(ID, 0)['data']

@@ -27,10 +27,12 @@ import sys
 import json
 import argparse
 import os.path
+from sets import Set
 
 datadir = '/home/mingf/comment_full/'
 homedir = '/home/mingf/Weiss/'
 module = 'mysql/'
+dbsetting = '/home/mingf/Weiss/scrapers/imdb/dbsetting.json'
 release_date = ''
 cfile = ''
 efile = ''
@@ -44,24 +46,41 @@ def _dict2tuple(entry):
             entry['author'] or u'',
             entry['title'] or u'',
             entry['time'],
-            entry['sentiment']
+            entry['sentiment'],
+            entry['csid']
             )
 
+def getHistory(source):
+        with open(dbsetting, 'r') as f:
+            setting = json.load(f)
+        dbh = mdb.connect(host=setting['host'], user=setting['user'], passwd=setting['passed'], db=setting['db'])
+        dbc = dbh.cursor()
+        dbc.execute("select comment.id from comment, entity where comment.eid=entity.eid and entity.source='%s'" % source)
+        res = dbc.fetchall()
+        IDs = map(lambda x: x[0], list(res))
+        return Set(IDs)
 
-def run():
+
+
+def run(IDs):
     if (not os.path.exists(cfile)):
         print "No such file",cfile
         return
     with open(cfile, 'r') as f:
         data = json.load(f)
-    print "About to load", thisdate, "with", len(data), "comment groups"
+
+    data = [_dict2tuple(comment) for comments in data for comment in comments]
+
+    print "About to load", thisdate, "with", len(data), "comments"
     if (len(data) == 0):
         return
+
+    data = filter(lambda comment: comment[7] not in IDs, data)
+    print "After filtering," , len(data), "comments left"
+
     dbc.executemany(
-        """INSERT INTO comment (eid, body, rating, author, title, time, sentiment)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)""",
-        [_dict2tuple(comment) for comments in data for comment in comments]
-    )
+        """INSERT INTO comment (eid, body, rating, author, title, time, sentiment, id)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""", data)
     dbh.commit()
 
 def _arg_parser():
@@ -101,8 +120,9 @@ if __name__ == '__main__':
     dbc.execute('SET character_set_connection=utf8;')
 
     for dt in rrule(DAILY, dtstart = start, until = end):
+        IDs = getHistory(source)
         thisdate = dt.strftime('%Y-%m-%d')
         cfile = '%s%s_comments_%s.json' % (datadir, source, thisdate)
-        run()
+        run(IDs)
 
     dbh.close()

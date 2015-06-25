@@ -26,7 +26,7 @@ cfile = ''
 efile = ''
 query = "groups=now-playing-us&title_type=feature"
 #query = "release_date=2015-01-01,2015-06-03&title_type=feature"
-
+#query = 'groups=top_100&release_date=2014-01-01,2015-01-01&title_type=feature&user_rating=8.6,10'
 
 def getHistory():
     with open(dbsetting, 'r') as f:
@@ -38,7 +38,8 @@ def getHistory():
     return {ID: num for ID, num in res}
 
 def getToCrawl():
-    crawled = getHistory()
+    #crawled = getHistory()
+    crawled = {}
     crawledIDs = Set(crawled.keys())
     IDs = helpers.get_movie_id_adv(query)
     print "Num of ID in the query", len(IDs)
@@ -50,7 +51,7 @@ def getToCrawl():
     updates = {ID: num for ID, num in IDwithNum.iteritems() if num != 0 and ID in crawledIDs and num > crawled[ID]}
     news = {ID: num for ID, num in IDwithNum.iteritems() if num != 0 and ID not in crawledIDs}
 
-    toCrawl = {ID: num - crawled[ID] for ID, num in updates.iteritems()}
+    toCrawl = {ID: num for ID, num in updates.iteritems()} # Change: crawl every commen. Needs to check duplication later.
     toCrawl.update(news)
 
     crawled.update(IDwithNum)

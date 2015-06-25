@@ -1497,6 +1497,8 @@ class DOMHTMLUserReviewParser(DOMParserBase):
                     #        inside news text.
                     'body': "../following-sibling::p[1]//text()",
                     'author': "./following-sibling::a[1]//text()",
+                    # csid is the comment id from imdb website
+                    'csid': "../following-sibling::div[1]/@id",
                     'date1': "./following-sibling::small[1]//text()",
                     'date2': "./following-sibling::small[2]//text()",
                     'rating': "./preceding-sibling::small[1]//text()",
@@ -1506,7 +1508,8 @@ class DOMHTMLUserReviewParser(DOMParserBase):
                     'body': (x.get('body') or u'').strip(),
                     'author': (x.get('author') or u'').strip(),
                     'time': _parse_date((x.get('date2') or x.get('date1') or u'').strip()),
-                    'rating': (_parse_rating(x.get('rating')) or u'').strip()
+                    'rating': (_parse_rating(x.get('rating')) or u'').strip(),
+                    'csid': (x.get('csid') or u'').strip(),
                 })),
         Extractor(label='amount',
             path="//td[@align='right']",
