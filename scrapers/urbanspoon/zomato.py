@@ -7,12 +7,43 @@ import urllib
 import csv
 import json
 import datetime
+import MySQLdb
+import ConfigParser
+
+## Read config file
+config = ConfigParser.ConfigParser()
+config.read("config.ini")
+
+## Grab values
+host = config.get('mysql', 'host')
+user = config.get('mysql', 'user')
+passwd = config.get('mysql', 'password')
+db = config.get('mysql', 'db')
+
+## First grab a list of all entities and comments
+# Connect to database
+db = MySQLdb.connect(host=host,user=user,passwd=passwd,db=db)
+
+# Create cursor which is used later
+cursor = db.cursor()
+
+# Dicts to contain query results
+all_entities = {}
+entity_comments = []
+
+# Grab all entity id's and eid's
+cursor.execute("SELECT eid,id FROM entity WHERE tid=2")
+
+# Add records which link eid's to id's
+for item in cursor.fetchall():
+    all_entities[item[1]] = int(item[0])
+
 
 main_page = 'http://www.zomato.com'
 
-restaurants = '/pittsburgh/restaurants?sort=best'
-path="/home/mingf/data/"
-#path = ''
+restaurants = '/pittsburgh/best-restaurants'
+#path="/home/mingf/data/"
+path = ''
 
 ## Determine the starting page value to begin scraping on
 # Finds todays date (also used to create json file name)
@@ -21,7 +52,7 @@ weekday = today.weekday()
 startPage = ( weekday * 20 ) + 1 # There are currently 148 pages of results. 7 days of 20 pages give us 140 pages.
 
 ## scrape numPages of search results starting on startPage
-numPages = 20
+numPages = 3
 
 ## List that contains urls to each restaurant
 placeList = []
@@ -31,7 +62,7 @@ placeList = []
 for i in range(startPage, startPage + numPages):
 
     ## Changes page number for results
-    pagination = "&page=" + str(i)
+    pagination = "?page=" + str(i)
 
     ## Assemble url
     url = main_page + restaurants + pagination
@@ -111,7 +142,7 @@ for place in placeList:
     ## Tries to grab restaurant data and skips any restaurants where it runs into problems
     try:
         ## Grab food types served
-        descText = ""
+        descText = "FoodType: "
         foodTypes = soup2.findAll('a',{'itemprop':"servesCuisine"})
         numTypes = len(foodTypes)
         counter = 1
@@ -126,9 +157,13 @@ for place in placeList:
 
             counter += 1
 
-        ## Get restaurant id and name
+        ## Get restaurant id, name, address
         entityID_val = soup2.find('div',{'itemprop':'ratingValue'})['data-res-id']
         entity_val = soup2.find('span',{'itemprop':'name'}).getText()
+        entity_address = soup2.find('div',{'itemprop':'address'}).getText()
+        entity_address = entity_address.replace('United States','').strip()
+
+        descText += "Address: " + entity_address
 
         ## Send post request using entity_id
         response = postRequest('https://www.zomato.com/php/filter_reviews.php',entityID_val,200)
@@ -147,6 +182,14 @@ for place in placeList:
         print "Problem processing content from URL: " + safeUrl 
         print "skipping to the next URL"
         continue
+
+    # Grab all csid's belonging to this entity
+    cursor.execute("SELECT id FROM comment WHERE eid=" + entityID_val)
+
+    # Add records which link eid's to id's
+    for item in cursor.fetchall():
+        entity_comments.append(int(item))
+
 
     for i in range(len(review_vals)):
         ## Attempts to grab review content, skips reviews where it runs into problems
@@ -169,22 +212,25 @@ for place in placeList:
             print "skipping to the next URL"
             continue
 
-        comment.append(review)
-        rating.append(None)
-        author.append(author_vals[i].getText())
-        commentTitle.append(None)
-        commentID.append(reviewID_vals[i]['data-review-id'])
+        if int(reviewID_vals[i]['data-review-id']) in entity_comments:
+            print "review present - skipping to avoid duplicating"
+        else:
+            comment.append(review)
+            rating.append(None)
+            author.append(author_vals[i].getText())
+            commentTitle.append(None)
+            commentID.append(reviewID_vals[i]['data-review-id'])
 
-        datetimeStamp = date_vals[i]['datetime'].split(' ')
-        dateStamp = datetimeStamp[0]
-        date.append(dateStamp)
+            datetimeStamp = date_vals[i]['datetime'].split(' ')
+            dateStamp = datetimeStamp[0]
+            date.append(dateStamp)
 
-        ## Entity Fields
-        entityID.append(entityID_val)
-        entity.append(entity_val)
-        rating.append(-1)
-        url.append(place)
-        description.append(descText)
+            ## Entity Fields
+            entityID.append(entityID_val)
+            entity.append(entity_val)
+            rating.append(-1)
+            url.append(place)
+            description.append(descText)
 
 
 ## Print out stats
@@ -201,7 +247,8 @@ entityJSON = []
 for i in range(len(date)):
     commentDict = {"body":comment[i],"rating":rating[i], \
         "author":author[i],"title":commentTitle[i], \
-        "source":source,"id":entityID[i],"time":date[i]}
+        "source":source,"id":entityID[i],"time":date[i], \
+        "csid":commentID[i]}
     commentByEntity.append(commentDict)
 
     if i+2 < len(entityID):
