@@ -33,9 +33,9 @@ def getHistory():
         setting = json.load(f)
     dbh = mdb.connect(host=setting['host'], user=setting['user'], passwd=setting['passed'], db=setting['db'])
     dbc = dbh.cursor()
-    dbc.execute("select id, count(cid) from comment, entity where comment.eid = entity.eid and source='imdb' group by comment.eid")
+    dbc.execute("select comment.id from comment, entity where comment.eid = entity.eid and entity.source='imdb'")
     res = dbc.fetchall()
-    return {ID: num for ID, num in res}
+    return Set([ID(0) for ID in res])
 
 def getToCrawl():
     #crawled = getHistory()
@@ -61,7 +61,7 @@ def getToCrawl():
 
     return toCrawl, news.keys()   # return: movies that have new reviews, new movies
 
-def run():
+def run(IDs):
     toCrawl, newEntities = getToCrawl()
     print "About to get Reviews ", len(toCrawl), ' IDs in total'
     pool = Pool(processes=6)
@@ -69,18 +69,23 @@ def run():
     entities = pool.map(helpers.get_movie_infos, newEntities)
     pool.close()
     pool.join()
+    comments = [comment for commentgroup in comments for comment in commentgroup] # flatten it
+    print "There are", len(comments), "comments"
+    comments = filter(lambda cmt: cmt['csid'] not in IDs, comments) # filter out comments had already to make json smaller
+    print "After filtering, there are", len(comments), "comments"
     #comments = filter(lambda x : x != [], comments)  #should not have any []
     with open(cfile, 'w') as f:
-        json.dump(comments, f)
+        json.dump([comments], f)
     with open(efile, 'w') as f:
         json.dump(entities, f)
 
 
 if __name__ == "__main__":
     for dt in rrule(DAILY, dtstart = start, until = end):
+        IDs = getHistory()
         thisdate = dt.strftime('%Y-%m-%d')
         release_date = '%s,%s' % (thisdate, thisdate)  ## the release date range to crawl
         cfile = '%s%s_comments_%s.json' % (datadir, source, thisdate)
         efile = '%s%s_entities_%s.json' % (datadir, source, thisdate)
         print "About to crawl", thisdate
-        run()
+        run(IDs)
