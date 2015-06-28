@@ -1,229 +1,104 @@
 """
-This file
-- Transforms a training file to the input format required by LibLINEAR.
-- Convert a query to the format required by LibLINEAR when doing prediction.
-- Output feature file for prediction.  
-============================================================================
-
-Original training file format, for each line:
-label<tab>query
-For example:
-    1   What do people think of ?
-Transformed format, for each line:
-label<space>feature index:feature value<space>feature index:feature value
-For example:
-    2 18:1 24:1 46:1 49:1 50:1 56:1 62:1 71:1 82:1 87:1 94:1
-Note: 
-- When transforming training file, 
-  the feature index should be in strictly ascending order
-
-TODO(wenjunw@cs.cmu.edu): 
-- May need to do feature engineering in the future
-- Add script names which will use functions in this file
-
-Usage: 
-This file cannot run standalone, the functions will be used in other scripts,
-such as "daily_train.py"
-
-Author: Wenjun Wang
-Date: June 18, 2015
+TODO(wenjunw@cs.cmu.edu):
+- Consider encoding issue
 """
-
 import nltk
-import pickle
 
-def feature_sort(row):
-    """Sort feature
+def stopword(stpfile):
+    stopwords = set()
+    for line in open(stpfile):
+        stopwords.add(line.strip())
+    return stopwords
 
-    Sort features based on their index value, in ascending order.
-    Use quick sort algorithm, the following functions 
-    quick_sort_helper and partition are part of 
-    the implementation of the algorithm.
+def parse_options(options=''):
+    argv = options.split()
+    feature_arg = {}
+    feature_arg['unigram'] = False
+    feature_arg['POS'] = False
+    feature_arg['POSbigram'] = False
+    feature_arg['stem'] = False
+    feature_arg['stopword_removal'] = False
+    for i in xrange(0,len(argv)):
+        if argv[i].lower()[:4] == '-uni':
+            feature_arg['unigram'] = True
+        if argv[i].lower()[:6] == '-pos2':
+            feature_arg['POSbigram'] = True
+            feature_arg['POS'] = True
+        if argv[i].lower()[:6] == '-stprm':
+            feature_arg['stopword_removal'] = True
+        if argv[i].lower() == '-stem':
+            feature_arg['stem'] = True
+    return feature_arg
 
-    Args:
-        row: a list of features in the format like "1 59:1 71:1 67:1", 
-             the order of the features is unsorted
+def feature_generator(query, stopwords, feature_arg):
+    features = set()
 
-    Return:
-        no return, but row will be sorted
+    token_list = nltk.word_tokenize(query.lower())
+    if feature_arg['POS'] == False:
+        if feature_arg['stopword_removal'] == True:
+            token_list = stopword_removal(token_list, stopwords)
+        if feature_arg['stem'] == True:
+            token_list = stemming(token_list)
+    else:
+        tag_list = nltk.pos_tag(token_list)
+        if feature_arg['stopword_removal'] == True:
+            tag_list = stopword_removal(tag_list, stopwords)
 
-    """
-    quick_sort_helper(row,0,len(row)-1)
+    if feature_arg['unigram'] == True:
+        _ngram(1, token_list, features)
+    if feature_arg['POSbigram'] == True:
+        _POSngram(2, tag_list, features)
 
-def quick_sort_helper(row,first,last):
-    if first<last:
-        splitpoint = partition(row,first,last)
-
-        quick_sort_helper(row,first,splitpoint-1)
-        quick_sort_helper(row,splitpoint+1,last)
-
-def partition(row,first,last):
-    pivotvalue = int(row[first].split(':')[0])
-
-    leftmark = first + 1
-    rightmark = last
-
-    done = False
-    while not done:
-
-        while (leftmark <= rightmark and
-                int(row[leftmark].split(':')[0]) <= pivotvalue):
-            leftmark = leftmark + 1
-
-        while (int(row[rightmark].split(':')[0]) >= pivotvalue and
-                rightmark >= leftmark):
-            rightmark = rightmark -1
-
-        if rightmark < leftmark:
-            done = True
-        else:
-            temp = row[leftmark]
-            row[leftmark] = row[rightmark]
-            row[rightmark] = temp
-
-    temp = row[first]
-    row[first] = row[rightmark]
-    row[rightmark] = temp
-
-    return rightmark
+    return features
 
 """
-The following two functions are not used now, 
-they may be helpful in the future when doing feature engineering or data preprocessing
+Currently, only implements unigram
 """
-def stemming(sentences):
+def _ngram(n, token_list, features):
+    if n == 1:
+        for t in token_list:
+            features |= set([t])
+
+"""
+Currently, only implements POSbigram
+"""
+def _POSngram(n, tag_list, features):
+    features |= set(['START_'+tag_list[0][1]])
+    for i in xrange(0,len(tag_list)-1):
+        features |= set([tag_list[i][1]+'_'+tag_list[i+1][1]])
+    features |= set([tag_list[-1][1]+'_END'])
+
+def stemming(token_list):
     """Stem all words in the list
 
     Arg: 
-        sentences: a list of cleaned sentences (i.e. stop words removed)
+        token_list: tokens of a query
 
     Return:
-        stemed_sentences: a list of sentenses with tokens stemed,
+        stemmed_tokens: all tokens in the original query will be stemmed
     """
     porter = nltk.PorterStemmer()
-    stemed_sentences = []
-    for i in xrange(0,len(sentences)):
-        #print "Processing sentence: ", sentence
-        tokens = nltk.word_tokenize(sentences[i])
-        stemed_tokens = [porter.stem(t) for t in tokens]
-        stemed_sentences += [' '.join(stemed_tokens)]
-    return stemed_sentences
+    stemmed_tokens = [porter.stem(t) for t in token_list]
 
-def stopword_removal(sentence):
+    return stemmed_tokens
+
+def stopword_removal(token_list, stopwords):
     """Remove all stopwords in a sentence
 
     Arg:
-        sentence: raw string
+        token_list: tokens of a query
 
     Return:
         clean_sentence: stopwords-removed sentence, string format    
     """
-    stopwords = set(["comment","opinion","view","review","can","give","me","you","i","tell"])
-    clean_sentence = []
-    tokens = nltk.word_tokenize(sentence)
-    for i in xrange(0,len(tokens)):
-        if (tokens[i].strip("s")).lower() in stopwords:
-            tokens[i] = ''
-    clean_sentence += [' '.join(tokens).strip()]
-    return clean_sentence
-
-def feature_generator(train_file, features):
-    """Generate a feature list
-
-    Go through all tokens (unigram) in the training file 
-    and treat each one as a feature.
-
-    Arg:
-        train_file: the name of the original training file
-        features: the name of the output feature file
-
-    Return:
-        feature_list: a list of unique features
-        Create a new feature file
-    """
-    feature_set = set()
-    output = open(features,'w')
-    for line in open(train_file):
-        line = line.lower()
-        feature = set(nltk.word_tokenize(line.split('\t')[1]))
-        feature_set |= feature
-    feature_list = list(feature_set)
-    pickle.dump(feature_list, output)
-    return feature_list
-
-def convert_file(train_file, feature_list, feature_file):
-    """Transform original training file to the format required by LibLINEAR
-
-    Args:
-        train_file: the name of the original training file
-        feature_list: a list of unique features generated by function feature_generator
-        feature_file: the name of the final transformed file
-
-    Return:
-        no return, create a new file, the transformed file
-    """
-    to_write = []
-    for line in open(train_file):
-        label,query = line.split('\t')
-        feature_string = convert_query(query, feature_list, 'train')
-        feature_string = label + feature_string + '\n'
-        to_write.append(feature_string)
-    to_write_string = ''.join(to_write)
-
-    output = open(feature_file, 'w')
-    output.write(to_write_string)
-    output.close()
-
-def convert_query(query, feature_list, goal):
-    """Convert each query to the format required by LibLINEAR
-
-    Args: 
-        query: the raw query, like 'What do people think of ?'
-        feature_list: a list of unique features generated by function feature_generator
-    
-    Return:
-        Depend on whether you want to transform training file or convert user's query
-        - Transform training file: transformed query in string format
-        - Convert user's query: store information in a dictionary, 
-          which is a member of a list. 
-          Note: 
-          To predict the class of a query, the LibLINEAR call is like this:
-          # load the trained model
-          m = load_model('model')
-          # y are labels, x can be generated by this function 
-          y, x = [1,2,3,4,5], [{24:1, 50:1, 71:1, 62:1, 87:1, 96:1}] 
-          # do the prediction
-          p_label, p_val = predict(y, x, m, '-b 0')
-    """
-    features = nltk.word_tokenize(query.lower())
-    if goal == 'train':
-        onerow = set()
-        for f in features:
-            onerow.add(' %s:%s' % (str(feature_list.index(f)+1), str(1)))
-        onerow = list(onerow)
-        feature_sort(onerow)
-        feature_string = ''.join(onerow)
-    
-        return feature_string
-    else:
-        onerow = {}
-        try:
-            for f in features:
-                onerow[feature_list.index(f)+1] = 1
-        except ValueError:
-            #print '%s is not in the feature list' % f.lower()
-            pass
-        return [onerow]
-
-def main():
-    """Initially for debugging
-    """
-    train_file = 'training'
-    feature_file = 'training_file'
-    features = 'features'
-    feature_list = feature_generator(train_file, features)
-    convert_file(train_file, feature_list, feature_file)
-
-
-if __name__ == '__main__':
-    main()
+    clean_tokens = []
+    while len(token_list) > 0:
+        if isinstance(token_list[0],str):
+            target = token_list[0].lower()
+        elif isinstance(token_list[0],tuple):
+            target = token_list[0][0].lower()
+        if target in stopwords:
+            token_list.pop(0)
+        else:
+            clean_tokens.append(token_list.pop(0))
+    return clean_tokens

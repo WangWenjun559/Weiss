@@ -10,10 +10,9 @@ TODO(wenjunw@cs.cmu.edu):
 Usage: python daily_train.py 
 
 Author: Wenjun Wang
-Date: June 18, 2015
+Date: June 28, 2015
 """
-from feature import feature_generator
-from feature import convert_file
+from train import Train
 from liblinearutil import *
 
 import time
@@ -23,12 +22,18 @@ def main():
     train_file = 'training' # name of original training file
     feature_file = 'training_file' # name of transformed training file
     feature_output = 'features' # name of feature file
-    feature_list = feature_generator(train_file, feature_output)
-    convert_file(train_file, feature_list, feature_file)
+    stpfile = 'english.stp'
+    feature_arg = '-uni -pos2 -stprm -stem'
+
+    date = time.strftime('%Y-%m-%d')
+    log = open('training_log','a')
+    log.write('Feature Arguments: %s\n-------------------------------\n'% feature_arg)
+
+    training = Train(train_file, stpfile, feature_output, feature_file, feature_arg)
+    training.convert_file()
     # Use LibLINEAR to train the model
-    y, x = svm_read_problem('training_file')
-    m = train(y, x, '-c 2 -s 5 -B 1 -e 0.01 -v 5 -q')
-    date = time.strftime("%Y-%m-%d")
+    y, x = svm_read_problem(feature_file+'_'+date)
+    m = train(y, x, '-c 1 -s 1 -B 1 -e 0.01 -v 5 -q')
     save_model('model_'+date, m)
 
 if __name__ == '__main__':

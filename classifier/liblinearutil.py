@@ -158,18 +158,16 @@ def train(arg1, arg2=None, arg3=None):
 		liblinear.cross_validation(prob, param, nr_fold, target)
 		ACC, MSE, SCC = evaluations(prob.y[:l], target[:l])
 		directory = os.getcwd()
-		result = open(directory+'/training_log','a')
+		result = open('training_log','a')
 		if param.solver_type in [L2R_L2LOSS_SVR, L2R_L2LOSS_SVR_DUAL, L2R_L1LOSS_SVR_DUAL]:
-			result.write("%s\nCross Validation Mean squared error: %g\nArguments: %s\n"
+			result.write("%s\nCross Validation Mean squared error : %g\nArguments: %s\n" 
 				% (time.strftime("%x"), MSE, options))
-			result.write("%s\nCross Validation Squared correlation coefficient: %g\nArguments: %s\n" 
+			result.write("%s\nCross Validation Squared correlation coefficient : %g\nArguments: %s\n" 
 				% (time.strftime("%x"), SCC, options))
-			result.write("-----------------------------------------\n")
 			#return MSE
 		else:
-			result.write("%s\nCross Validation Accuracy: %g%%\nArguments: %s\n" 
+			result.write("%s\nCross Validation Accuracy : %g%%\nArguments: %s\n" 
 				% (time.strftime("%x"), ACC, options))
-			result.write("-----------------------------------------\n")
 			#return ACC
 	#else :
 	m = liblinear.train(prob, param)
