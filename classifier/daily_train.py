@@ -24,7 +24,7 @@ def main():
     feature_file = 'training_file_'+date # name of transformed training file
     feature_output = 'features_'+date # name of feature file
     stpfile = 'english.stp'
-    feature_arg = '-uni -pos2 -stprm -stem'
+    feature_arg = '-uni -pos2'
 
     log = open('training_log','a')
     log.write('Feature Arguments: %s\n-------------------------------\n'% feature_arg)
