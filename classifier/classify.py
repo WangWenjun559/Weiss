@@ -85,7 +85,7 @@ class Classifier(object):
         trees = []
         for i in entities:
             if isinstance(i,tuple):
-                if (i[1][:2] == 'NN' or i[1][:2] == 'JJ'
+                if ((i[1][:2] == 'NN' or i[1][:2] == 'JJ')
                     and i[0].lower() not in self.stopwords 
                     and i[0].rstrip('s') not in self.type_words['movie']
                     and i[0].rstrip('s') not in self.type_words['article'] 
