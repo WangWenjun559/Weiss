@@ -34,20 +34,17 @@ def feature_generator(query, stopwords, feature_arg):
     features = set()
 
     token_list = nltk.word_tokenize(query.lower())
-    if feature_arg['POS'] == False:
-        if feature_arg['stopword_removal'] == True:
-            token_list = stopword_removal(token_list, stopwords)
-        if feature_arg['stem'] == True:
-            token_list = stemming(token_list)
-    else:
-        tag_list = nltk.pos_tag(token_list)
-        if feature_arg['stopword_removal'] == True:
-            tag_list = stopword_removal(tag_list, stopwords)
+    if feature_arg['POS'] == True:
+        token_list = nltk.pos_tag(token_list)
+    if feature_arg['stopword_removal'] == True:
+        token_list = stopword_removal(token_list, stopwords)
+    if feature_arg['stem'] == True:
+        token_list = stemming(token_list)
 
     if feature_arg['unigram'] == True:
         _ngram(1, token_list, features)
     if feature_arg['POSbigram'] == True:
-        _POSngram(2, tag_list, features)
+        _POSngram(2, token_list, features)
 
     return features
 
@@ -57,16 +54,20 @@ Currently, only implements unigram
 def _ngram(n, token_list, features):
     if n == 1:
         for t in token_list:
-            features |= set([t])
+            if isinstance(t,tuple):
+                features |= set([t[0]])
+            elif isinstance(t,str):
+                features |= set([t])
 
 """
 Currently, only implements POSbigram
 """
 def _POSngram(n, tag_list, features):
     features |= set(['START_'+tag_list[0][1]])
-    for i in xrange(0,len(tag_list)-1):
-        features |= set([tag_list[i][1]+'_'+tag_list[i+1][1]])
-    features |= set([tag_list[-1][1]+'_END'])
+    if n == 2:
+        for i in xrange(0,len(tag_list)-1):
+            features |= set([tag_list[i][1]+'_'+tag_list[i+1][1]])
+        features |= set([tag_list[-1][1]+'_END'])
 
 def stemming(token_list):
     """Stem all words in the list
@@ -78,7 +79,10 @@ def stemming(token_list):
         stemmed_tokens: all tokens in the original query will be stemmed
     """
     porter = nltk.PorterStemmer()
-    stemmed_tokens = [porter.stem(t) for t in token_list]
+    if isinstance(token_list[0],str):
+        stemmed_tokens = [porter.stem(t) for t in token_list]
+    elif isinstance(token_list[0],tuple):
+        stemmed_tokens = [(porter.stem(t[0]),t[1]) for t in token_list]
 
     return stemmed_tokens
 
