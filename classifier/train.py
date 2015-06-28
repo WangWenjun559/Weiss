@@ -8,8 +8,8 @@ class Train(object):
         self.stopwords = stopword(stpfile)
         self.feature_arg = parse_options(options)
         self.train_file = train_file
-        self.features = features + '_' + time.strftime('%Y-%m-%d')
-        self.feature_file = feature_file + '_' + time.strftime('%Y-%m-%d')
+        self.features = features
+        self.feature_file = feature_file
         self.feature_list = self._train_feature()
 
     def _train_feature(self):
