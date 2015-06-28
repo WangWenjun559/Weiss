@@ -1,11 +1,11 @@
 """
 This is a demo about how to use LibLINEAR to do the prediction
 """
-from test import Test
+from classify import Classifier
 
 # Example query
-query = 'What do people think of ?'
+query = "Let's talk about action movies"
 # Do the prediction
-test = Test()
-p_label = test.classify(query)
+test = Classifier()
+p_label = test.action_info(query)
 print p_label
