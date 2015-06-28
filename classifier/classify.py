@@ -52,7 +52,10 @@ class Classifier(object):
         features = feature_generator(query, self.stopwords, self.feature_arg)
         onerow = {}
         for f in features:
-            onerow[self.feature_list.index(f)+1] = 1
+            try:
+                onerow[self.feature_list.index(f)+1] = 1
+            except ValueError:
+                pass
 
         return [onerow]
 
