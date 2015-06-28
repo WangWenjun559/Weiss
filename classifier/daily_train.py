@@ -18,21 +18,21 @@ from liblinearutil import *
 import time
 
 def main():
+    date = time.strftime('%Y-%m-%d')
 	# Create appropriate input file for LibLINEAR (SVM)
     train_file = 'training' # name of original training file
-    feature_file = 'training_file' # name of transformed training file
-    feature_output = 'features' # name of feature file
+    feature_file = 'training_file_'+date # name of transformed training file
+    feature_output = 'features_'+date # name of feature file
     stpfile = 'english.stp'
     feature_arg = '-uni -pos2 -stprm -stem'
 
-    date = time.strftime('%Y-%m-%d')
     log = open('training_log','a')
     log.write('Feature Arguments: %s\n-------------------------------\n'% feature_arg)
 
     training = Train(train_file, stpfile, feature_output, feature_file, feature_arg)
     training.convert_file()
     # Use LibLINEAR to train the model
-    y, x = svm_read_problem(feature_file+'_'+date)
+    y, x = svm_read_problem(feature_file)
     m = train(y, x, '-c 1 -s 1 -B 1 -e 0.01 -v 5 -q')
     save_model('model_'+date, m)
 
