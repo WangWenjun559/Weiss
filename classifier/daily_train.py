@@ -34,7 +34,7 @@ def main():
     # Use LibLINEAR to train the model
     y, x = svm_read_problem(feature_file)
     m = train(y, x, '-c 1 -s 1 -B 1 -e 0.01 -v 5 -q')
-    save_model('model_'+date, m)
+    save_model('models/model_'+date, m)
 
 if __name__ == '__main__':
     main()
