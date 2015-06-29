@@ -3,3 +3,5 @@
 classifier/liblinear.so.2
 # Create new models everyday
 classifier/models/*
+# .pyc files
+classifier/*.pyc
