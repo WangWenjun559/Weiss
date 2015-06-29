@@ -26,7 +26,7 @@ def main():
     stpfile = 'english.stp'
     feature_arg = '-uni -pos2'
 
-    log = open('training_log','a')
+    log = open('models/training_log','a')
     log.write('Feature Arguments: %s\n-------------------------------\n'% feature_arg)
 
     training = Train(train_file, stpfile, feature_output, feature_file, feature_arg)
