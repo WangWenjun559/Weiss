@@ -1,83 +1,241 @@
-1	What do people think of ?
-1	What about people's opinion ?
 1	Any thoughts from people ?
-1	How do people look at it ?
 1	Any comments ?
 1	Any reviews ?
 1	Can I have another review about this ?
 1	Can I have another comment about this ?
 1	Can I have another one ?
+1	Another review ?
+1	Another comment ?
 1	Can you give me another comment ?
 1	What did other people say ?
 1	Give me another comment .
 1	Give me another review .
-1	Next comment .
-1	Give me next comment .
 1	What's more ?
-1	Any other opinions ?
 1	Give me a random comment .
-1	How do people think about it ?
-1	How do people say about it ?
+1	Show me a random comment .
+1	Show me a comment .
+1	Show me another comment .
+1	Show me another review .
 2	Give me an opposite opinion about it .
+2	Give me an opposite opinion .
+2	Show me an opposite opinion .
 2	Give me an opposite comment .
+2	Show me an opposite comment
+2	An opposite comment
+2	An opposite opinion
 2	Can you show me an opposite comment ?
+2	Show me an opposite comment
 2	Give me an opposite example .
+2	Show me an opposite example .
 2	What is the opposite opinion ?
 2	Any people disagree with that ?
-2	Does anyone else also support this ?
+2	Any people disagree ?
 2	What do people on the other side of the fence say ?
 2	What do people on the other side of the fence think ?
 2	Can I have an opposite viewpoint ?
 2	What is an opposing view ?
+2	What is an opposing view of it ?
 2	What is the opposite opinion ?
+2	What is the opposite opinion of it ?
+2	What is the opposite idea of it ?
 2	Give me a comment that disagrees with this comment .
+2	Give me a comment that disagrees with this .
+2	Show me a comment that disagrees with this .
+2	Give me a comment against this .
+2	Show me a comment against this .
+2	A comment that disagrees with this .
 2	Any opposite thoughts ?
 2	Any different thoughts ?
 2	Any opposite attitude on it ?
+2	Any opposite attitude ?
 2	Do any people think differently ?
 2	Is there any different opinion ?
+2	Does anyone don't think so ?
+3	Does anyone else also support this ?
+3	Does anyone support this ?
 3	Any positive comment on it ?
+3	Any positive comment ?
+3	Any other opinions ?
 3	Any positive review on it ?
-3	Anyone like it ?
+3	Any positive review ?
 3	What good things were said about this ?
+3	What good things were said ?
 3	What was something good said ?
+3	What was something good said about it ?
 3	Give me a positive comment .
 3	Give me a positive view .
 3	Give me a positive opinion .
-3	Does anyone else also oppose this ?
+3	A positive comment
+3	A positive review
+3	Show me a positive review
+3	Show me a positive comment
 3	Any other positive opinions ?
 3	Do people say anything good about it ?
+3	Do people say anything good ?
 3	How good is it ?
+3	How good ?
 3	Is there any positive comment ?
 3	Can I have a positive viewpoint ?
 3	Can I have a positive view ?
-3	Does anybody think it is a good idea ?
 3	Give me some good words of it .
+3	Give me some good words .
+3	Show me some good words .
 3	Give me a reason why I should like it .
+3	Why I should like it ?
+3	What is the idea of those who like it ?
+4	Does anyone else also oppose this ?
+4	Does anyone say anything against this ?
 4	Any negative comment on it ?
+4	Any negative comment ?
+4	Show me a negative comment
+4	Show me a negative review
+4	Show me some bad words
 4	Any negative review on it ?
-4	Anyone doesn't like it ?
-4	Does anybody think it is a bad idea ?
+4	Any negative review ?
 4	Give me some negative comments of it .
+4	Give me some negative comments .
 4	Tell me why I shouldn't like it .
 4	Give me a reason why I shouldn't like it .
+4	Why I shouldn't like it ?
 4	What bad things were said ?
-4	What was somethign bad said about it ?
+4	What bad things were said about it ?
+4	What was something bad said about it ?
+4	What was something bad said ?
 4	Give me a negative review .
 4	Give me a negative comment .
 4	Give me a negative opinion .
 4	Any other negative opinions ?
 4	Is there any negative comment ?
 4	How bad is it ?
-4	Do people say anyghint bad about it ?
+4	How bad ?
+4	Do people say anything bad about it ?
+4	Do people say anything bad ?
 4	Can I have a negative view ?
 4	Can I have a negative viewpoint ?
 5	Next topic .
 5	Skip this one .
+5	Skip it .
+5	Skip
 5	Any other interesting things ?
 5	I don't like this one .
 5	This one is boring .
 5	Let's talk about something else .
+5	Let's talk about other things. 
 5	Let's change a subject .
+5	Let's move on to next topic
 5	I am good with this .
 5	Let's stop this and talk about other things .
+5	Anything else ?
+6	What do people think of it ?
+6	How do people think ?
+6	What do people think ?
+6	What about people's opinion ?
+6	How do people look at it ?
+6	How do people look ?
+6	How do people think about it ?
+6	How do people think of it ?
+6	Is it a good movie ?
+6	Is it a bad movie ?
+6	What do people think of it ?
+6	How do people think about it ?
+6	Do most people like it ?
+6	Do most people dislike it ?
+6	I guess only a few people like it, isn't it ?
+6	I guess only a few people dislike it, isn't it ?
+6	How many people think it's good ?
+6	How many people think it's bad ?
+6	How many people dislike it ?
+6	How many people like it ?
+6	How many people hate it ?
+6	Is it good or not ?
+6	Is it good or bad ?
+6	Is it nice or awful ?
+6	Is it good ?
+6	Is it bad ?
+6	Anyone doesn't like it ?
+6	Does anybody think it is a bad idea ?
+6	Does anybody think it is a good idea ?
+6	Give me some overall info about it
+6	What is the overall opinion ?
+6	Give me some overall info
+6	What is the overall opinion about it
+6	What is the overall opinion
+6	What is the general idea ?
+6	What is the general opinion ?
+6	What is the general idea about it ?
+6	What is the general opinion aobut it ?
+6	What is people's general attitude towards it?
+6	What is people's general attitude ?
+6	I want to know people's general attitude about it.
+6	I want to know people's general attitude .
+6	How about people's general attitude ?
+6	I want to know people's overall idea .
+6	I want to know people's overall idea about it .
+6	What is people's overall idea about it ?
+6	What is people's overall idea ? 
+6	How about people's overall idea ?
+6	How about people's overall idea about it ?
+6	Does anyone like it ?
+6	Does anyone dislike it ?
+6	Does anyone adore this ?
+6	Does anyone think it's a good idea ?
+6	Does anyone think it's a bad idea ?
+6	Does anyone hate this ?
+6	How do people think about it ?
+6	How do people say about it ?
+6	Anyone like it ?
+7	Do you know Jurassic Park ?
+7	Any news about Apple Watch ?
+7	What about Apple Watch ?
+7	Tell me something about the Little Asian
+7	I'd like to know something about Jurassic Park
+7	Do you know any Chinese restaurant ?
+7	Let's talk about Jurassic Park
+7	How about Jurassic Park
+7	I'd like to talk about Jurassic Park
+7	Jurassic Park
+7	I pick Jurassic Park
+7	I want to know more about the Confederate flag
+7	Can you tell me more about the Confederate flag ?
+7	Let's talk about action movies
+7	Let's discuss Med Max .
+7	What about movies about robots
+7	I'd like to talk about animation films
+7	Do you know any place that has good steak ?
+7	I want to have some seafood
+7	I want to eat seafood
+7	Is there any Chinese restaurant ?
+7	Any good action movies ?
+7	Can you recommend any romance movies ?
+7	I want to know movies directed by James Cameron
+7	Any movie starring Julia Roberts ?
+7	Julia Roberts' movies
+7	Any movie directed by James Cameron ?
+7	Where can I get pizza ?
+7	I like Italian food, where should I go ?
+7	I'm hungry where can I go for Chinese food ?
+7	Can you recommend any Chinese restaurant ?
+8	Can we talk about news ?
+8	Can we talk about movies ?
+8	Can we talk about restaurants ?
+8	I want to know something about latest news
+8	I want to know something about recent movies
+8	I want to know something about nearby restaurants
+8	I'm quite interested in recent news
+8	Do you know anything about movies ?
+8	Do you know anything about news ?
+8	Do you know anything about restaurants ?
+8	Let's talk about movies .
+8	Let's talk about news .
+8	Let's talk about restaurants .
+8	How about movies
+8	How about news
+8	How about restaurants
+8	Movie
+8	News
+8	Restaurant
+8	I'd like to talk about movies
+8	I'd like to talk about restaurants
+8	I'd like to talk about news
+8	How does restaurants sound ?
+8	How about we talk about news articles ?
