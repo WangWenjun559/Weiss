@@ -1,7 +1,0 @@
-Feature Arguments: -uni -pos2
--------------------------------
-06/29/15
-Cross Validation Accuracy : 88.4793%
-Arguments: -c 1 -s 1 -B 1 -e 0.01 -v 5 -q
-Feature Arguments: -uni -pos2
--------------------------------
