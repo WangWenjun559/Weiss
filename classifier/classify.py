@@ -1,4 +1,9 @@
 """
+This script does action classification and extract keywords from the incoming query.
+
+Author: Wenjun Wang
+Date: June 29, 2015
+
 TODO(wenjunw@cs.cmu.edu):
 - Reconsider the type words
 """
@@ -11,6 +16,10 @@ from liblinearutil import *
 
 class Classifier(object):
     def __init__(self):
+        """
+        All variables which would be used by every query classification and parsing are listed here.
+        Only need to create Classifier object once, i.e. initialize once
+        """    
         self.model = self._get_model()
         self.stopwords = stopword('english.stp')
         self.feature_arg = parse_options('-uni -pos2')
@@ -19,6 +28,12 @@ class Classifier(object):
         self.labels = [1,2,3,4,5,6,7]
 
     def _get_model(self):
+        """Load model
+
+        This function is called during initialization
+
+        Return: model
+        """
         date = str(datetime.date.today())
         m = load_model('models/model_'+date)
         if m == None:
@@ -28,6 +43,12 @@ class Classifier(object):
         return m
 
     def _get_feature_list(self):
+        """Load feature file
+
+        This function is called during initialization
+
+        Return: Feature list
+        """
         date = str(datetime.date.today())
         try:
             infile = open('models/features_'+date)
@@ -40,6 +61,8 @@ class Classifier(object):
 
     def _convert_query_to_dictionary(self, query):
         """Convert each user query to the format required by LibLINEAR
+
+        This function is called by self._classify(query)
 
         Args and Need: 
             query: the raw query, like 'What do people think of ?'
@@ -60,6 +83,12 @@ class Classifier(object):
         return [onerow]
 
     def _classify(self, query):
+        """Does query classification, which decides which action need to be taken
+
+        This function is called by self.action_info
+
+        Return: Action id
+        """
         x = self._convert_query_to_dictionary(query)
         p_label, p_val = predict(self.labels, x, self.model, '-b 0')
         #print p_val
@@ -69,17 +98,39 @@ class Classifier(object):
         return int(p_label[0])
 
     def action_info(self, query, plausible):
+        """API function in this script. Gives all info of an action
+
+        This is the only function which will be called outside this script.
+
+        Args:
+            query: query need to classify and parse
+            plausible: a set of plausible actions at current step
+
+        Return:
+            arguments: a dictionary contains all the info needed by calling function
+
+        """
         arguments = {}
         if 8 in plausible:
             self._type_recognition(query, arguments)
-        elif 7 in plausible:
+        elif 7 in plausible and len(plausible) == 1:
             self._entity_recognition(query,arguments)
         else:
             arguments['aid'] = self._classify(query)
+            if arguments['aid'] == 7:
+                self._entity_recognition(query,arguments)
 
         return arguments
 
     def _entity_recognition(self, query, arguments):
+        """Parse query and extract keywords
+
+        This function is called by self.action_info
+
+        Args:
+            query: query needs to be parsed
+            arguments: info needs to be updated
+        """
         tokens = nltk.word_tokenize(query)
         tags = nltk.pos_tag(tokens)
         entities = nltk.chunk.ne_chunk(tags)
@@ -112,6 +163,12 @@ class Classifier(object):
             arguments['aid'] = -1
     
     def _set_type_words(self):
+        """Initialize synonymy words of movie, article and restaurant
+
+        This function is called during initialization
+
+        Return: A dictionary, key: movie, article, restaurant, value: their synonymy words
+        """
         topic = {}
         topic['movie'] = set(['cinema','show','film','picture','cinematograph',
             'videotape','flick','pic','cine','cinematics','photodrama',
@@ -127,6 +184,15 @@ class Classifier(object):
         return topic
 
     def _type_recognition(self, query, arguments):
+        """Identity the type of the topic: movie, article or restaurant
+
+        This is called by self.action_info
+
+        Args:
+            query: query needs to be parsed
+            arguments: info needs to be updated
+
+        """
         tokens = nltk.word_tokenize(query)
         arguments['aid'] = 8
         if len(tokens) > 1:
