@@ -1,3 +1,26 @@
+"""
+This script
+- Transforms a training file to the input format required by LibLINEAR.
+- Output feature file for prediction.  
+=======================================================================
+
+Original training file format, for each line:
+label<tab>query
+For example:
+    1   What do people think of ?
+Transformed format, for each line:
+label<space>feature index:feature value<space>feature index:feature value
+For example:
+    2 18:1 24:1 46:1 49:1 50:1 56:1 62:1 71:1 82:1 87:1 94:1
+Note: 
+- When transforming training file, 
+  the feature index should be in strictly ascending order
+
+Usage: refer to "daily_train.py"
+
+Author: Wenjun Wang
+Date: June 28, 2015
+"""
 import pickle
 import time
 
@@ -13,6 +36,12 @@ class Train(object):
         self.feature_list = self._train_feature()
 
     def _train_feature(self):
+        """Extract features from all queries in the training file
+
+        Outcome:
+           - Return a list of features
+           - Write feature list to output file
+        """
         feature_set = set()
         output = open(self.features, 'w')
         for line in open(self.train_file):
@@ -50,6 +79,8 @@ class Train(object):
 
     def _convert_query_to_string(self, query):
         """Convert each query in the training file to the format required by LibLINEAR
+
+        This function is called by self.convert_file
 
         Args and Need: 
             query: the raw query, like 'What do people think of ?'
