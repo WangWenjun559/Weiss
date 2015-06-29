@@ -1,11 +1,15 @@
 """
 This script does action classification and extract keywords from the incoming query.
+====================================================================================
+
+TODO(wenjunw@cs.cmu.edu):
+- Reconsider the type words
+
+Usage: refer to demo.py
 
 Author: Wenjun Wang
 Date: June 29, 2015
 
-TODO(wenjunw@cs.cmu.edu):
-- Reconsider the type words
 """
 import pickle
 import datetime
@@ -60,7 +64,7 @@ class Classifier(object):
         return feature_list
 
     def _convert_query_to_dictionary(self, query):
-        """Convert each user query to the format required by LibLINEAR
+        """Convert each user query to the format (refer to train.py) required by LibLINEAR
 
         This function is called by self._classify(query)
 

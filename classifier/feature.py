@@ -1,16 +1,37 @@
 """
+This script extracts features from the query.
+=============================================
+
+Usage: 
+This file cannot run standalone, the functions will be used in other scripts,
+such as "train.py" and "classify.py"
+
 TODO(wenjunw@cs.cmu.edu):
 - Consider encoding issue
+
+Author: Wenjun Wang
+Date: June 28, 2015
+
 """
 import nltk
 
 def stopword(stpfile):
+    """Reads stopwords from a file and return a set of stopwords
+    """
     stopwords = set()
     for line in open(stpfile):
         stopwords.add(line.strip())
     return stopwords
 
 def parse_options(options=''):
+    """parse feature options, i.e. which types of features need to extract
+
+    Arg:
+        options: a string of feature options in the format like: '-uni -pos2'
+
+    Return:
+        feature_arg: a dictionary of feature options, key: feature name, value: True/False
+    """
     argv = options.split()
     feature_arg = {}
     feature_arg['unigram'] = False
@@ -31,15 +52,25 @@ def parse_options(options=''):
     return feature_arg
 
 def feature_generator(query, stopwords, feature_arg):
+    """Generate a feature set from the query
+
+    Args:
+        query: the query need to extract features from
+        stopwords: a set of stopwords
+        feature_arg: returned by parse_options, 
+            contains info of which types of features need to be extract
+    Return:
+        features: a set of features
+    """
     features = set()
 
     token_list = nltk.word_tokenize(query.lower())
     if feature_arg['POS'] == True:
         token_list = nltk.pos_tag(token_list)
     if feature_arg['stopword_removal'] == True:
-        token_list = stopword_removal(token_list, stopwords)
+        token_list = _stopword_removal(token_list, stopwords)
     if feature_arg['stem'] == True:
-        token_list = stemming(token_list)
+        token_list = _stemming(token_list)
 
     if feature_arg['unigram'] == True:
         _ngram(1, token_list, features)
@@ -48,10 +79,18 @@ def feature_generator(query, stopwords, feature_arg):
 
     return features
 
-"""
-Currently, only implements unigram
-"""
+
 def _ngram(n, token_list, features):
+    """Extract ngram features
+    Currently, only implements unigram
+
+    This function is called by feature_generator
+
+    Args:
+        n: n=1 unigram, n=2 bigram, n=3 trigram
+        token_list: a list of tokens of a query
+        features: feature set need to update
+    """
     if n == 1:
         for t in token_list:
             if isinstance(t,tuple):
@@ -59,24 +98,33 @@ def _ngram(n, token_list, features):
             elif isinstance(t,str):
                 features |= set([t])
 
-"""
-Currently, only implements POSbigram
-"""
 def _POSngram(n, tag_list, features):
+    """Extract POSngram features
+    Currently, only implements POSbigram
+
+    This function is called by feature_generator
+
+    Args:
+        n: n=1 POSunigram, n=2 POSbigram, n=3 POStrigram
+        tag_list: a list of (token, POStag) tuples of the query
+        features: feature set need to update
+    """
     features |= set(['START_'+tag_list[0][1]])
     if n == 2:
         for i in xrange(0,len(tag_list)-1):
             features |= set([tag_list[i][1]+'_'+tag_list[i+1][1]])
         features |= set([tag_list[-1][1]+'_END'])
 
-def stemming(token_list):
+def _stemming(token_list):
     """Stem all words in the list
 
     Arg: 
-        token_list: tokens of a query
+        token_list: a list of tokens of a query 
+            OR a list of (token, POStag) tuples of the query
 
     Return:
-        stemmed_tokens: all tokens in the original query will be stemmed
+        stemmed_tokens: a list of stemmed tokens of a query
+            OR a list of (stemmed_token, POStag) tuples of the query
     """
     porter = nltk.PorterStemmer()
     if isinstance(token_list[0],str):
@@ -86,14 +134,15 @@ def stemming(token_list):
 
     return stemmed_tokens
 
-def stopword_removal(token_list, stopwords):
+def _stopword_removal(token_list, stopwords):
     """Remove all stopwords in a sentence
 
     Arg:
-        token_list: tokens of a query
+        token_list: a list of tokens of a query 
+            OR a list of (token, POStag) tuples of the query
 
     Return:
-        clean_sentence: stopwords-removed sentence, string format    
+        clean_tokens: stopwords-removed version of original token_list
     """
     clean_tokens = []
     while len(token_list) > 0:
