@@ -20,20 +20,20 @@ class Classifier(object):
 
     def _get_model(self):
         date = str(datetime.date.today())
-        m = load_model('model_'+date)
+        m = load_model('models/model_'+date)
         if m == None:
             date = str(datetime.date.fromordinal(datetime.date.today().toordinal()-1))
-            m = load_model('model_'+date)
+            m = load_model('models/model_'+date)
 
         return m
 
     def _get_feature_list(self):
         date = str(datetime.date.today())
         try:
-            infile = open('features_'+date)
+            infile = open('models/features_'+date)
         except IOError:
             date = str(datetime.date.fromordinal(datetime.date.today().toordinal()-1))
-            infile = open('features_'+date)
+            infile = open('models/features_'+date)
 
         feature_list = pickle.load(infile)
         return feature_list
