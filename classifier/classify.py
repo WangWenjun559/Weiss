@@ -16,7 +16,7 @@ class Classifier(object):
         self.feature_arg = parse_options('-uni -pos2')
         self.feature_list = self._get_feature_list()
         self.type_words = self._set_type_words()
-        self.labels = [1,2,3,4,5,6,7,8]
+        self.labels = [1,2,3,4,5,6,7]
 
     def _get_model(self):
         date = str(datetime.date.today())
@@ -62,20 +62,20 @@ class Classifier(object):
     def _classify(self, query):
         x = self._convert_query_to_dictionary(query)
         p_label, p_val = predict(self.labels, x, self.model, '-b 0')
+        #print p_val
         if p_val[0][int(p_label[0])-1] == 0:
             p_label[0] = -1
 
-        return int(p_label[0]) # API changes here
+        return int(p_label[0])
 
-    def action_info(self, query):
+    def action_info(self, query, plausible):
         arguments = {}
-        arguments['aid'] = self._classify(query)
-
-        
-        if arguments['aid'] == 7:
+        if 8 in plausible:
+            self._type_recognition(query, arguments)
+        elif 7 in plausible:
             self._entity_recognition(query,arguments)
-        elif arguments['aid'] == 8:
-            self._type_recognition(query,arguments)
+        else:
+            arguments['aid'] = self._classify(query)
 
         return arguments
 
@@ -83,6 +83,8 @@ class Classifier(object):
         tokens = nltk.word_tokenize(query)
         tags = nltk.pos_tag(tokens)
         entities = nltk.chunk.ne_chunk(tags)
+        arguments['aid'] = 7
+        #print entities
 
         tuples = []
         trees = []
@@ -104,8 +106,10 @@ class Classifier(object):
 
         if len(trees) > 0:
             arguments['keywords'] = '#'.join(trees).strip('#')
-        else:
+        elif len(tuples) > 0:
             arguments['keywords'] = '#'.join(tuples).strip('#')
+        else:
+            arguments['aid'] = -1
     
     def _set_type_words(self):
         topic = {}
@@ -124,9 +128,22 @@ class Classifier(object):
 
     def _type_recognition(self, query, arguments):
         tokens = nltk.word_tokenize(query)
-        if tokens[-1].rstrip('s') in movie or tokens[-2].rstrip('s') in self.type_words['article']:
-            arguments['tid'] = 1
-        elif tokens[-1].rstrip('s') in movie or tokens[-2].rstrip('s') in self.type_words['restaurant']:
-            arguments['tid'] = 2
-        elif tokens[-1].rstrip('s') in movie or tokens[-2].rstrip('s') in self.type_words['movie']:
-            arguments['tid'] = 3
+        arguments['aid'] = 8
+        if len(tokens) > 1:
+            if tokens[-1].rstrip('s') in self.type_words['article'] or tokens[-2].rstrip('s') in self.type_words['article']:
+                arguments['tid'] = 1
+            elif tokens[-1].rstrip('s') in self.type_words['restaurant'] or tokens[-2].rstrip('s') in self.type_words['restaurant']:
+                arguments['tid'] = 2
+            elif tokens[-1].rstrip('s') in self.type_words['movie'] or tokens[-2].rstrip('s') in self.type_words['movie']:
+                arguments['tid'] = 3
+            else:
+                arguments['aid'] = -1
+        else:
+            if tokens[-1].rstrip('s') in self.type_words['article']:
+                arguments['tid'] = 1
+            elif tokens[-1].rstrip('s') in self.type_words['restaurant']:
+                arguments['tid'] = 2
+            elif tokens[-1].rstrip('s') in self.type_words['movie']:
+                arguments['tid'] = 3
+            else:
+                arguments['aid'] = -1
