@@ -519,7 +519,7 @@ class IMDbHTTPAccessSystem(IMDbBase):
         return self.smProxy.search_movie_parser.parse(cont, results=results)['data']
 
     def get_movie_main(self, movieID):
-        cont = self._retrieve(self.urls['movie_main'] % movieID + 'combined')
+        cont = self._myRetrieve(self.urls['movie_main'] % movieID + 'combined')
         return self.mProxy.movie_parser.parse(cont, mdparse=self._mdparse)
 
     def get_movie_full_credits(self, movieID):

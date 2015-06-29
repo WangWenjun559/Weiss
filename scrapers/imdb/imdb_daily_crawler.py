@@ -35,7 +35,7 @@ def getHistory():
     dbc = dbh.cursor()
     dbc.execute("select comment.id from comment, entity where comment.eid = entity.eid and entity.source='imdb'")
     res = dbc.fetchall()
-    return Set([ID(0) for ID in res])
+    return Set([ID[0] for ID in res])
 
 def getToCrawl():
     #crawled = getHistory()
