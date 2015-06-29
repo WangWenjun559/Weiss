@@ -21,8 +21,8 @@ def main():
     date = time.strftime('%Y-%m-%d')
 	# Create appropriate input file for LibLINEAR (SVM)
     train_file = 'training' # name of original training file
-    feature_file = 'training_file_'+date # name of transformed training file
-    feature_output = 'features_'+date # name of feature file
+    feature_file = 'models/training_file_'+date # name of transformed training file
+    feature_output = 'models/features_'+date # name of feature file
     stpfile = 'english.stp'
     feature_arg = '-uni -pos2'
 
