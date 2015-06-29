@@ -2,4 +2,4 @@
 # which is different on different machines
 classifier/liblinear.so.2
 # Create new models everyday
-# classifier/model/*
+classifier/models/*
