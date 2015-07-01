@@ -4,11 +4,12 @@ This script does action classification and extract keywords from the incoming qu
 
 TODO(wenjunw@cs.cmu.edu):
 - Reconsider the type words
+- Consider action 6,7,8 in one query
 
 Usage: refer to demo.py
 
-Author: Wenjun Wang
-Date: June 29, 2015
+Author: Wenjun Wang<wenjunw@cs.cmu.edu>
+Date: July 1, 2015
 
 """
 import pickle
@@ -26,7 +27,7 @@ class Classifier(object):
         """    
         self.model = self._get_model()
         self.stopwords = stopword('english.stp')
-        self.feature_arg = parse_options('-uni -pos2')
+        self.feature_arg = parse_options('-uni -pos2 -stem -stprm')
         self.feature_list = self._get_feature_list()
         self.type_words = self._set_type_words()
         self.labels = [1,2,3,4,5,6,7]
@@ -115,14 +116,31 @@ class Classifier(object):
 
         """
         arguments = {}
-        if 8 in plausible:
-            self._type_recognition(query, arguments)
-        elif 7 in plausible and len(plausible) == 1:
+        temp = -1
+        if plausible == set([5,7]): # will update later
             self._entity_recognition(query,arguments)
+            if 'keywords' not in arguments:
+                arguments['aid'] = 5
+            else:
+                arguments['aid'] = 7
         else:
+            self._type_recognition(query, arguments)
+            if arguments['aid'] == 8:
+                temp = 8
             arguments['aid'] = self._classify(query)
-            if arguments['aid'] == 7:
+            # Plugin Austin's classifier here
+            # if arguments['aid'] == 7: 
+            #     run Austin's classifier  #Then we won't need action 9
+            #     self._entity_recognition(query,arguements)
+            if temp == 8:
+                if arguments['aid'] == 7:
+                    arguments['aid'] = 9
+                else:
+                    arguments['aid'] = 8
+            if arguments['aid'] in set([7,9]):
                 self._entity_recognition(query,arguments)
+                if 'keywords' not in arguments: 
+                    arguments['aid'] = 5
 
         return arguments
 
@@ -138,7 +156,8 @@ class Classifier(object):
         tokens = nltk.word_tokenize(query)
         tags = nltk.pos_tag(tokens)
         entities = nltk.chunk.ne_chunk(tags)
-        arguments['aid'] = 7
+        if 'aid' not in arguments:
+            arguments['aid'] = 7
         #print entities
 
         tuples = []
@@ -163,8 +182,6 @@ class Classifier(object):
             arguments['keywords'] = '#'.join(trees).strip('#')
         elif len(tuples) > 0:
             arguments['keywords'] = '#'.join(tuples).strip('#')
-        else:
-            arguments['aid'] = -1
     
     def _set_type_words(self):
         """Initialize synonymy words of movie, article and restaurant
@@ -199,21 +216,15 @@ class Classifier(object):
         """
         tokens = nltk.word_tokenize(query)
         arguments['aid'] = 8
-        if len(tokens) > 1:
-            if tokens[-1].rstrip('s') in self.type_words['article'] or tokens[-2].rstrip('s') in self.type_words['article']:
+        for i in xrange(0,len(tokens)):
+            if tokens[i] in self.type_words['article']:
                 arguments['tid'] = 1
-            elif tokens[-1].rstrip('s') in self.type_words['restaurant'] or tokens[-2].rstrip('s') in self.type_words['restaurant']:
+                break
+            if tokens[i] in self.type_words['restaurant']:
                 arguments['tid'] = 2
-            elif tokens[-1].rstrip('s') in self.type_words['movie'] or tokens[-2].rstrip('s') in self.type_words['movie']:
+                break
+            if tokens[i] in self.type_words['movie']:
                 arguments['tid'] = 3
-            else:
-                arguments['aid'] = -1
-        else:
-            if tokens[-1].rstrip('s') in self.type_words['article']:
-                arguments['tid'] = 1
-            elif tokens[-1].rstrip('s') in self.type_words['restaurant']:
-                arguments['tid'] = 2
-            elif tokens[-1].rstrip('s') in self.type_words['movie']:
-                arguments['tid'] = 3
-            else:
-                arguments['aid'] = -1
+                break
+        if 'tid' not in arguments:
+            arguments['aid'] = -1

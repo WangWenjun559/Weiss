@@ -24,7 +24,7 @@ def main():
     feature_file = 'models/training_file_'+date # name of transformed training file
     feature_output = 'models/features_'+date # name of feature file
     stpfile = 'english.stp' # english stopwords file
-    feature_arg = '-uni -pos2' # types of features need to extract
+    feature_arg = '-uni -pos2 -stem -stprm' # types of features need to extract
 
     log = open('models/training_log','a') # log file
     log.write('Feature Arguments: %s\n-------------------------------\n'% feature_arg)
