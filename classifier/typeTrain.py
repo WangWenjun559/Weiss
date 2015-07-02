@@ -78,6 +78,14 @@ class TypeTrain():
 
 
     def train(self):
+        '''
+        ## -- How to predict -- ##
+        Wenjun start prediction
+            query = "blah blah"
+            q = list2vec(hashit(q)) 
+            clf2 = joblib.load('nb')
+            print(clf2.predict(q)) # <--- returns type id
+        '''
         cursor = self.cursor
 
         limit = 10000
