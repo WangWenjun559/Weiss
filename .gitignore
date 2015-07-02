@@ -8,3 +8,4 @@ training_file_*
 training_log
 # .pyc files
 *.pyc
+.DS_Store
