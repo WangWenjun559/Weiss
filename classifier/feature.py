@@ -14,6 +14,8 @@ Date: June 28, 2015
 
 """
 import nltk
+import hashlib
+import numpy as np
 
 def stopword(stpfile):
     """Reads stopwords from a file and return a set of stopwords
@@ -155,3 +157,32 @@ def _stopword_removal(token_list, stopwords):
         else:
             clean_tokens.append(token_list.pop(0))
     return clean_tokens
+
+def hashit(text, dictionary_size=1000):
+        '''
+        Takes a sentence, tokenizes it, stems each word, and hashes each word
+        based on the dictionary size specified.
+        '''
+        stemmer = nltk.SnowballStemmer("english", ignore_stopwords=True)
+        tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+')
+
+        tokens = tokenizer.tokenize(unicode(text, errors='ignore'))
+        
+        x_i = [0] * dictionary_size
+
+        for token in tokens:
+            stemmed = stemmer.stem(token.lower())
+            if not stemmed in nltk.corpus.stopwords.words('english') and len(stemmed) > 1:
+                hasher = hashlib.sha1()
+                hasher.update(stemmed)
+                index = int(hasher.hexdigest(), 16) % dictionary_size
+                x_i[index] += 1
+
+        return x_i
+
+def list2Vec(word_list):
+        '''
+        Converts a list into a numpy vector/matrix
+        '''
+        a = np.array(word_list)
+        return a
