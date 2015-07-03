@@ -128,11 +128,11 @@ def _stemming(token_list):
         stemmed_tokens: a list of stemmed tokens of a query
             OR a list of (stemmed_token, POStag) tuples of the query
     """
-    porter = nltk.PorterStemmer()
+    snowball = nltk.SnowballStemmer("english")
     if isinstance(token_list[0],str):
-        stemmed_tokens = [porter.stem(t) for t in token_list]
+        stemmed_tokens = [snowball.stem(t) for t in token_list]
     elif isinstance(token_list[0],tuple):
-        stemmed_tokens = [(porter.stem(t[0]),t[1]) for t in token_list]
+        stemmed_tokens = [(snowball.stem(t[0]),t[1]) for t in token_list]
 
     return stemmed_tokens
 

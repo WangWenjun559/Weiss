@@ -125,7 +125,7 @@ class Classifier(object):
         if arguments['aid'] == 8:
             temp = 8
         # State System Initiative and State Type Selected
-        if plausible < set([5,7,8]):
+        if plausible <= set([5,7,8]):
             q = list2Vec(hashit(query))
             arguments['tid'] = self.type_model.predict(q)[0]
             self._entity_recognition(query,arguments)

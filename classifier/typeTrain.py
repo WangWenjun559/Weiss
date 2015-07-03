@@ -8,7 +8,7 @@ from feature import hashit, list2Vec
 import time
 
 class TypeTrain():
-    def __init__(self,model_save_path='/',dictionary_size=1000):
+    def __init__(self,model_save_path='/',dictionary_size=2000):
         self.cursor = self._initDB()
         self.dictionary_size = dictionary_size
         self.path = model_save_path
