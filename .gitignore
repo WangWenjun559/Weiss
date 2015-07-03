@@ -6,6 +6,7 @@ model_*
 features_*
 training_file_*
 training_log
+type_model_*
 # .pyc files
 *.pyc
 .DS_Store
