@@ -88,7 +88,7 @@ class TypeTrain():
         '''
         cursor = self.cursor
 
-        limit = 10000
+        limit = 100
         sqls = ["SELECT body FROM comment JOIN entity ON comment.eid = entity.eid WHERE entity.tid=1 ORDER BY time DESC LIMIT " + str(limit),
             "SELECT body FROM comment JOIN entity ON comment.eid = entity.eid WHERE entity.tid=2 ORDER BY time DESC LIMIT " + str(limit),
             "SELECT body FROM comment JOIN entity ON comment.eid = entity.eid WHERE entity.tid=3 ORDER BY time DESC LIMIT " + str(limit)]

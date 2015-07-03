@@ -6,6 +6,7 @@ TODO(wenjunw@cs.cmu.edu):
 - Reconsider the type words
 - Consider action 6,7,8 in one query
 - log force change of aid
+- update _type_recognition function
 
 Usage: refer to demo.py
 
@@ -46,7 +47,7 @@ class Classifier(object):
         if m1 == None:
             date = str(datetime.date.fromordinal(datetime.date.today().toordinal()-1))
             m1 = load_model('models/model_'+date)
-        m2 = joblib.load('models/type_model')
+        m2 = joblib.load('models/type_model_'+date)
 
         return m1, m2
 
@@ -125,12 +126,11 @@ class Classifier(object):
             temp = 8
         # State System Initiative and State Type Selected
         if plausible < set([5,7,8]):
+            q = list2Vec(hashit(query))
+            arguments['tid'] = self.type_model.predict(q)[0]
             self._entity_recognition(query,arguments)
             if 'keywords' in arguments:
                 arguments['aid'] = 7
-                if temp == -1:
-                    q = list2vec(hashit(query))
-                    arguments['tid'] = self.type_model.predict(q)
             else:
                 if temp != 8:
                     if 5 in plausible:
@@ -142,8 +142,8 @@ class Classifier(object):
             arguments['aid'] = self._classify(query)
             if arguments['aid'] == 7:
                 if temp == -1:
-                    q = list2vec(hashit(query))
-                    arguments['tid'] = self.type_model.predict(q)
+                    q = list2Vec(hashit(query))
+                    arguments['tid'] = self.type_model.predict(q)[0]
                 self._entity_recognition(query,arguments)
                 if 'keywords' not in arguments:
                     if temp == -1:
@@ -211,7 +211,7 @@ class Classifier(object):
             'statement','intelligence','disclosure','revelation',
             'gossip','dispatch','news','article'])
         topic['restaurant'] = set(['bar','cafeteria','diner','dining','saloon','coffeehouse',
-            'canteen','chophouse','drive-in','eatery','grill','lunchroom','inn',
+            'canteen','chophouse','drive-in','eatery','grill','lunchroom','inn','food',
             'pizzeria','hideaway','cafe','charcuterie','deli','restaurant'])
         return topic
 
