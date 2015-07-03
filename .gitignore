@@ -1,12 +1,15 @@
-# This file depends on the OS, 
-# which is different on different machines
+# libs 
 liblinear.so.2
-# Create new models everyday
+
+# Daily model files
 model_*
 features_*
 training_file_*
 training_log
 type_model_*
+
 # .pyc files
 *.pyc
+
+# misc
 .DS_Store
