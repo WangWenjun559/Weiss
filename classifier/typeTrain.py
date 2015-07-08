@@ -7,8 +7,8 @@ import ConfigParser
 from feature import hashit, list2Vec
 
 class TypeTrain():
-    def __init__(self,model_save_path='/',dictionary_size=2000):
-        self.cursor = self._initDB()
+    def __init__(self,model_save_path='/',dictionary_size=2000, comment_limit=10000):
+        self.cursor = self.initDB()
         self.dictionary_size = dictionary_size
         self.comment_limit = comment_limit
         self.path = model_save_path
