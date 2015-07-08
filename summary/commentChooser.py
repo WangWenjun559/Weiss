@@ -18,10 +18,7 @@ import the package (commentChooser) and choose the specifc method
 '''
 
 ## Import list
-#import _commentChooser
-import nltk
 from igraph import *
-import nltk
 from nltk.corpus import stopwords
 import re
 import random

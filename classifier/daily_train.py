@@ -13,11 +13,14 @@ Author: Wenjun Wang
 Date: June 28, 2015
 """
 from train import Train
+from typeTrain import *
 from liblinearutil import *
+from sklearn.externals import joblib
 
 import time
 
 def main():
+    ### Train Wenjun's classifier
     # Name of files needed when training a model
     date = time.strftime('%Y-%m-%d')
     train_file = 'training' # name of original training file
@@ -36,6 +39,11 @@ def main():
     y, x = svm_read_problem(feature_file)
     m = train(y, x, '-c 1 -s 1 -B 1 -e 0.01 -v 5 -q')
     save_model('models/model_'+date, m)
+
+    ### Train Austin's classifier
+    tt = TypeTrain('models/type_model_' + date)
+    tt.train()
+
 
 if __name__ == '__main__':
     main()

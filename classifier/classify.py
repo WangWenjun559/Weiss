@@ -5,6 +5,8 @@ This script does action classification and extract keywords from the incoming qu
 TODO(wenjunw@cs.cmu.edu):
 - Reconsider the type words
 - Consider action 6,7,8 in one query
+- log force change of aid
+- update _type_recognition function
 
 Usage: refer to demo.py
 
@@ -18,6 +20,7 @@ import nltk
 
 from feature import *
 from liblinearutil import *
+from sklearn.externals import joblib
 
 class Classifier(object):
     def __init__(self):
@@ -25,7 +28,7 @@ class Classifier(object):
         All variables which would be used by every query classification and parsing are listed here.
         Only need to create Classifier object once, i.e. initialize once
         """    
-        self.model = self._get_model()
+        self.action_model, self.type_model = self._get_model()
         self.stopwords = stopword('english.stp')
         self.feature_arg = parse_options('-uni -pos2 -stem -stprm')
         self.feature_list = self._get_feature_list()
@@ -37,15 +40,16 @@ class Classifier(object):
 
         This function is called during initialization
 
-        Return: model
+        Return: models, action model and type model
         """
         date = str(datetime.date.today())
-        m = load_model('models/model_'+date)
-        if m == None:
+        m1 = load_model('models/model_'+date)
+        if m1 == None:
             date = str(datetime.date.fromordinal(datetime.date.today().toordinal()-1))
-            m = load_model('models/model_'+date)
+            m1 = load_model('models/model_'+date)
+        m2 = joblib.load('models/type_model_'+date)
 
-        return m
+        return m1, m2
 
     def _get_feature_list(self):
         """Load feature file
@@ -95,8 +99,8 @@ class Classifier(object):
         Return: Action id
         """
         x = self._convert_query_to_dictionary(query)
-        p_label, p_val = predict(self.labels, x, self.model, '-b 0')
-        #print p_val
+        p_label, p_val = predict(self.labels, x, self.action_model, '-b 0')
+        # print p_val
         if p_val[0][int(p_label[0])-1] == 0:
             p_label[0] = -1
 
@@ -117,30 +121,37 @@ class Classifier(object):
         """
         arguments = {}
         temp = -1
-        if plausible == set([5,7]): # will update later
+        self._type_recognition(query, arguments)
+        if arguments['aid'] == 8:
+            temp = 8
+        # State System Initiative and State Type Selected
+        if plausible <= set([5,7,8]):
+            q = list2Vec(hashit(query))
+            arguments['tid'] = self.type_model.predict(q)[0]
             self._entity_recognition(query,arguments)
-            if 'keywords' not in arguments:
-                arguments['aid'] = 5
-            else:
+            if 'keywords' in arguments:
                 arguments['aid'] = 7
+            else:
+                if temp != 8:
+                    if 5 in plausible:
+                        arguments['aid'] = 5
+                    else:
+                        arguments['aid'] = -1
+        # State Entity Selected and State All Selected
         else:
-            self._type_recognition(query, arguments)
-            if arguments['aid'] == 8:
-                temp = 8
             arguments['aid'] = self._classify(query)
-            # Plugin Austin's classifier here
-            # if arguments['aid'] == 7: 
-            #     run Austin's classifier  #Then we won't need action 9
-            #     self._entity_recognition(query,arguements)
-            if temp == 8:
-                if arguments['aid'] == 7:
-                    arguments['aid'] = 9
-                else:
-                    arguments['aid'] = 8
-            if arguments['aid'] in set([7,9]):
+            if arguments['aid'] == 7:
+                if temp == -1:
+                    q = list2Vec(hashit(query))
+                    arguments['tid'] = self.type_model.predict(q)[0]
                 self._entity_recognition(query,arguments)
-                if 'keywords' not in arguments: 
-                    arguments['aid'] = 5
+                if 'keywords' not in arguments:
+                    if temp == -1:
+                        arguments['aid'] = 5
+                    else:
+                        arguments['aid'] = 8
+            if arguments['aid'] == 2 and 2 not in plausible:
+                arguments['aid'] = 1
 
         return arguments
 
@@ -200,7 +211,7 @@ class Classifier(object):
             'statement','intelligence','disclosure','revelation',
             'gossip','dispatch','news','article'])
         topic['restaurant'] = set(['bar','cafeteria','diner','dining','saloon','coffeehouse',
-            'canteen','chophouse','drive-in','eatery','grill','lunchroom','inn',
+            'canteen','chophouse','drive-in','eatery','grill','lunchroom','inn','food',
             'pizzeria','hideaway','cafe','charcuterie','deli','restaurant'])
         return topic
 
