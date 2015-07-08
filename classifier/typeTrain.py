@@ -5,17 +5,16 @@ import nltk
 import MySQLdb
 import ConfigParser
 from feature import hashit, list2Vec
-import time
 
 class TypeTrain():
-    def __init__(self,model_save_path='/',dictionary_size=1000):
-        self.cursor = self._initDB()
+    def __init__(self,model_save_path='',dictionary_size=1000,comment_limit=10000):
+        self.cursor = self.initDB()
         self.dictionary_size = dictionary_size
+        self.comment_limit = comment_limit
         self.path = model_save_path
-        self.date = time.strftime('%Y-%m-%d')
     
 
-    def _initDB(self):
+    def initDB(self):
         '''
         Initializes connection to the DB
         '''
@@ -80,15 +79,13 @@ class TypeTrain():
     def train(self):
         '''
         ## -- How to predict -- ##
-        Wenjun start prediction
             query = "blah blah"
             q = list2vec(hashit(q)) 
             clf2 = joblib.load('nb')
             print(clf2.predict(q)) # <--- returns type id
         '''
-        cursor = self.cursor
 
-        limit = 10000
+        limit = self.comment_limit
         sqls = ["SELECT body FROM comment JOIN entity ON comment.eid = entity.eid WHERE entity.tid=1 ORDER BY time DESC LIMIT " + str(limit),
             "SELECT body FROM comment JOIN entity ON comment.eid = entity.eid WHERE entity.tid=2 ORDER BY time DESC LIMIT " + str(limit),
             "SELECT body FROM comment JOIN entity ON comment.eid = entity.eid WHERE entity.tid=3 ORDER BY time DESC LIMIT " + str(limit)]
@@ -106,7 +103,7 @@ class TypeTrain():
         print "Classifying"
         clf = MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True)
         clf.fit(X, Y)
-        joblib.dump(clf,'models/type_model_' + self.date ,compress=9)
+        joblib.dump(clf, self.path, compress=9)
         
 
 
