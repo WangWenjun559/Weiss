@@ -6,7 +6,7 @@ model_*
 features_*
 training_file_*
 training_log
-type_model_*
+type_model_2*
 
 # .pyc files
 *.pyc
