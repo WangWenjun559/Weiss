@@ -12,7 +12,7 @@ import ConfigParser
 
 ## Read config file
 config = ConfigParser.ConfigParser()
-config.read("config.ini")
+config.read("/home/mingf/Weiss/scrapers/urbanspoon/config.ini")
 
 ## Grab values
 host = config.get('mysql', 'host')
@@ -179,7 +179,7 @@ for place in placeList:
         reviewTitle_vals = [None] * len(review_vals) # No title to review on Zomato
         author_vals = soup3.findAll('span','left mr5') # use .getText() to get text content of tag
     except:
-        print "Problem processing content from URL: " + safeUrl 
+        print "Problem processing content from URL: " + safeUrl
         print "skipping to the next URL"
         continue
 
