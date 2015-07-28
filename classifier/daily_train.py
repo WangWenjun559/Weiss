@@ -37,13 +37,13 @@ def main():
     training.convert_file()
     # Use LibLINEAR to train the model and save the model
     y, x = svm_read_problem(feature_file)
-    m = train(y, x, '-c 1 -s 1 -B 1 -e 0.01 -v 5 -q')
+    m = train(y, x, '-c 3 -s 1 -B 1 -e 0.01 -v 5 -q')
     save_model('models/model_'+date, m)
-
+    """
     ### Train Austin's classifier
     tt = TypeTrain('models/type_model_' + date)
     tt.train()
-
+    """
 
 if __name__ == '__main__':
     main()

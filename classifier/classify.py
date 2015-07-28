@@ -33,7 +33,7 @@ class Classifier(object):
         self.feature_arg = parse_options('-uni -pos2 -stem -stprm')
         self.feature_list = self._get_feature_list()
         self.type_words = self._set_type_words()
-        self.labels = [1,2,3,4,5,6,7]
+        self.labels = [21,22,23,24,5,6,7]
 
     def _get_model(self):
         """Load model
