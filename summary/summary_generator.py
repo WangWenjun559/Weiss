@@ -2,7 +2,7 @@
 from conn_db import conn_DB
 from comment_select import *
 from summarizer import summarize
-from namedlist import namedlist
+from Weiss.util.namedlist import namedlist
 
 import sys
 import argparse

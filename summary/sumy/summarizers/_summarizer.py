@@ -9,7 +9,7 @@ from ..utils import ItemsCount
 from .._compat import to_unicode
 from ..nlp.stemmers import null_stemmer
 
-from ..namedlist import namedlist
+from Weiss.util.namedlist import namedlist
 from ..reranker import MMR
 
 SentenceInfo = namedlist("SentenceInfo", ("sentence", "order", "rating",))
