@@ -8,4 +8,4 @@
   
   To use IMDB scraper, please make sure you have `python 2.7` installed and `IMDbPY`. Furthermore, a few
   changes for the `IMDbPY` need to be done in order to support the scraping. The changed file are also
-  located in the repo. You can just replace thses file at the proper place of the python package directory.
+  located in `imdb/package`. You can just replace thses file at the proper place of the python package directory.
