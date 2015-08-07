@@ -1,6 +1,6 @@
 # Daily Scrapers
   
-  This directory contains the 4 scrapers for 4 data sources, including IMDB, GMA, MetaFilter, Zumato. 
+  This directory contains the 4 scrapers for 4 data sources, including IMDB, GMA, MetaFilter, Zomato. 
   Each scrapers are called by the `dailyScraper.sh` at given frequency as a crontab job. Each scripts 
   are pretty well self documented, but there are still a few notes for using these scrapers.
 
