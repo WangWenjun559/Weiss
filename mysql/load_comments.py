@@ -106,6 +106,8 @@ def _arg_parser():
 
 
 if __name__ == '__main__':
+    user, passwd, start, end, dbname, source = _arg_parser()
+
     with open(dbsetting, 'r') as f:
         setting = json.load(f)
     dbh = mdb.connect(host=setting['host'], user=setting['user'], passwd=setting['passed'], db=setting['db'])
