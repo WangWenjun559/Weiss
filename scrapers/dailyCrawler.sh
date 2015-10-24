@@ -69,7 +69,7 @@ CheckExitCode
 echo "Finished $source computing sentiment for $today"
 
 # Getting eid
-python $scrdir/sentiment/geteid.py $db $db washington $source $today $today
+python $scrdir/sentiment/geteid.py $db $db $passwd $source $today $today
 CheckExitCode
 echo "Finished $source finding eid for $today"
 
